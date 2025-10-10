@@ -1,0 +1,21 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directories
+node_modules/
+jspm_packages/
+Broker-and-CEP/
+addUser.js
+addUserOriginal.js
+getUsers.js
+debug.log
+rabitMQ-Publish.js
+rabitMQ-Subscribe.js
+BrokerCEP/CEP/esper-9.0.0/
+
+#wallet
+#!wallet/.gitkeep

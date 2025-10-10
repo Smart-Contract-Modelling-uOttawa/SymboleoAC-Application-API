@@ -1,0 +1,18 @@
+# TLS Listener
+# --- TLS Configuration ---
+listeners.ssl.default = 5671
+
+# Certificates
+ssl_options.cacertfile = /Users/sfuhaid/RunBlockchain/app-meatsale/certs/ca-cert.pem
+ssl_options.certfile   = /Users/sfuhaid/RunBlockchain/app-meatsale/certs/rabbitmq-server.crt
+ssl_options.keyfile    = /Users/sfuhaid/RunBlockchain/app-meatsale/certs/rabbitmq-server.key
+
+# Enforce mutual TLS
+ssl_options.verify = verify_none
+ssl_options.fail_if_no_peer_cert = false
+# --- Authentication Mechanism ---
+auth_mechanisms.1 = PLAIN
+auth_mechanisms.2 = AMQPLAIN
+#auth_mechanisms.1 = EXTERNAL
+# Map client CN to RabbitMQ username
+ssl_cert_login_from = common_name
