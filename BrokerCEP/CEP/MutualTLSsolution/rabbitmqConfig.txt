@@ -1,0 +1,14 @@
+# TLS Listener
+listeners.ssl.default = 5671
+ssl_options.cacertfile = /Users/sfuhaid/RunBlockchain/symboleoAC-app/certs/ca-cert.pem
+ssl_options.certfile   = /Users/sfuhaid/RunBlockchain/symboleoAC-app/certs/rabbitmq-server.crt
+ssl_options.keyfile    = /Users/sfuhaid/RunBlockchain/symboleoAC-app/certs/rabbitmq-server.key
+ssl_options.verify = verify_peer
+ssl_options.fail_if_no_peer_cert = true
+
+# Enable client certificate authentication
+ssl_cert_login_from = common_name
+auth_mechanisms.1 = EXTERNAL
+auth_mechanisms.2 = PLAIN
+loopback_users = none
+

@@ -36,7 +36,6 @@ import java.util.Map;
 public class EsperBridgeMutualTLS {
     private static final String ALERTS_EXCHANGE = "alerts";
     private static final String SENSOR_QUEUE = "sensor_data";
-    private static final String ALERTS_QUEUE = "alert_events";
 
     // === Global TLS paths (like Node.js constants) ===
     private static final Path __dirname = Paths.get(System.getProperty("user.dir"));
@@ -83,17 +82,7 @@ public class EsperBridgeMutualTLS {
 
             for (EPStatement stmt : deployment.getStatements()) {
                 stmt.addListener((newData, oldData, s, r) -> {
-                // Get current date and time
-                String alertTimestamp = java.time.LocalDateTime.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-                // Build alert string with timestamp
-                String alert = String.format("ALERT %s [%s]: %s",
-                        rule.get("id"),
-                        alertTimestamp,
-                        newData[0].getUnderlying());
-
-                    //String alert = "ALERT " + rule.get("id") + ": " + newData[0].getUnderlying();
+                    String alert = "ALERT " + rule.get("id") + ": " + newData[0].getUnderlying();
                     System.out.println(alert);
 
                     // Publish alerts back to RabbitMQ
@@ -102,7 +91,6 @@ public class EsperBridgeMutualTLS {
                         channel.exchangeDeclare(ALERTS_EXCHANGE, "fanout", true);
                         channel.basicPublish(ALERTS_EXCHANGE, "", null,
                                 alert.getBytes(StandardCharsets.UTF_8));
-                                
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -121,7 +109,6 @@ public class EsperBridgeMutualTLS {
 
                 String sensorId = (String) sensorData.get("sensorId");
                 Double value = Double.valueOf(sensorData.get("value").toString());
-                String sensorTimestamp = (String) sensorData.get("timestamp");
 
                 // Step 1: check sensor is enrolled in wallet
                 if (!WalletUtil.isSensorRegistered(sensorId)) {
@@ -144,7 +131,7 @@ public class EsperBridgeMutualTLS {
 
                 // Step 3: inject into Esper
                 runtime.getEventService().sendEventBean(
-                    new SensorEvents(sensorId, value, sensorTimestamp), "SensorEvents");
+                    new SensorEvents(sensorId, value), "SensorEvents");
             }, consumerTag -> {});
         }
     }
@@ -202,4 +189,140 @@ public class EsperBridgeMutualTLS {
         System.out.println("🔐 Secure RabbitMQ TLS connection configured.");
         return factory.newConnection();
     }
+
+    /* 
+    // Build a secure TLS connection to RabbitMQ, trusting Fabric CA cert
+    private static com.rabbitmq.client.Connection getRabbitConnection() throws Exception {
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        FileInputStream fis = new FileInputStream("../../certs/rabbitmq-server.crt");
+        X509Certificate caCert = (X509Certificate) cf.generateCertificate(fis);
+
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+        ks.setCertificateEntry("fabric-ca", caCert);
+
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ks);
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, tmf.getTrustManagers(), new SecureRandom());
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("rabbitmq-server");
+        factory.setPort(5671);
+        factory.useSslProtocol(sslContext);
+        factory.enableHostnameVerification();
+        return factory.newConnection();
+    }*/
 }
+
+
+
+
+/*import com.espertech.esper.compiler.client.*;
+import com.espertech.esper.runtime.client.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.*;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+// Import our POJO
+import Broker.CEP.SensorEvent;
+
+public class EsperBridge {
+    private static final String ALERTS_EXCHANGE = "alerts";
+    private static final String SENSOR_QUEUE = "sensor_data";
+
+    public static void main(String[] args) throws Exception {
+        // 1. Load rules.json (downloaded from Fabric via EnrollSensors.js)
+        ObjectMapper mapper = new ObjectMapper();
+        Map<?, ?> rulesConfig = mapper.readValue(new File("rules.json"), Map.class);
+        List<Map<String, Object>> rules = (List<Map<String, Object>>) rulesConfig.get("rules");
+
+        // 2. Setup Esper runtime
+        Configuration config = new Configuration();
+        config.getCommon().addEventType("SensorEvent", SensorEvent.class);
+        EPRuntime runtime = EPRuntimeProvider.getDefaultRuntime(config);
+        EPCompiler compiler = EPCompilerProvider.getCompiler();
+
+        for (Map<String, Object> rule : rules) {
+            String condition = (String) rule.get("condition");
+            String window = (String) rule.get("window");
+            String having = (String) rule.get("having");
+            String select = (String) rule.get("select");
+            String epl = String.format(
+                "select %s from SensorEvent(%s).win:%s having %s",
+                select, condition, window, having
+            );
+
+            CompilerArguments cargs = new CompilerArguments(config);
+            EPCompiled compiled = compiler.compile(epl, cargs);
+            EPDeployment deployment = runtime.getDeploymentService().deploy(compiled);
+
+            for (EPStatement stmt : deployment.getStatements()) {
+                stmt.addListener((newData, oldData, s, r) -> {
+                    String alert = "ALERT " + rule.get("id") + ": " + newData[0].getUnderlying();
+                    System.out.println(alert);
+
+                    try (Connection conn = getRabbitConnection();
+                         Channel channel = conn.createChannel()) {
+                        channel.exchangeDeclare(ALERTS_EXCHANGE, "fanout", true);
+                        channel.basicPublish(ALERTS_EXCHANGE, "", null,
+                                alert.getBytes(StandardCharsets.UTF_8));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+
+        // 3. Subscribe to RabbitMQ sensor data
+        try (Connection conn = getRabbitConnection();
+             Channel channel = conn.createChannel()) {
+            channel.queueDeclare(SENSOR_QUEUE, true, false, false, null);
+
+            channel.basicConsume(SENSOR_QUEUE, true, (consumerTag, message) -> {
+                String msg = new String(message.getBody(), StandardCharsets.UTF_8);
+                Map<String, Object> sensorData = mapper.readValue(msg, Map.class);
+
+                String sensorId = (String) sensorData.get("sensorId");
+                Double value = Double.valueOf(sensorData.get("value").toString());
+
+                // Step 1: check sensor is enrolled in wallet
+                if (!WalletUtil.isSensorRegistered(sensorId)) {
+                    System.err.println("⚠️ Unauthorized sensorId (not in wallet): " + sensorId);
+                    return;
+                }
+
+                // Step 2: verify sensor cert CN matches sensorId
+                try {
+                    String certPem = WalletUtil.getSensorCert(sensorId);
+                    if (!CertificateUtil.verifySensorBinding(certPem, sensorId)) {
+                        System.err.println("⚠️ Certificate CN mismatch for sensorId: " + sensorId);
+                        return;
+                    }
+                } catch (Exception e) {
+                    System.err.println("⚠️ Error verifying certificate for " + sensorId);
+                    e.printStackTrace();
+                    return;
+                }
+
+                // Step 3: inject into Esper
+                runtime.getEventService().sendEventBean(
+                    new SensorEvent(sensorId, value), "SensorEvent");
+            }, consumerTag -> {});
+        }
+    }
+
+    private static Connection getRabbitConnection() throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        factory.useSslProtocol(); // TLS required
+        return factory.newConnection();
+    }
+}
+*/

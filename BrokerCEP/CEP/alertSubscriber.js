@@ -15,13 +15,20 @@
  * ----------------------------------------------------------
  */
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; 
+
 const amqp = require('amqplib');
 const { getContract } = require('../gateway');
 const fs = require('fs');
 const path = require('path');
+const { executeTransaction } = require('../appAlert');
+const { getRuleDetailsBySensorId } = require('../util');
+
+
 
 // === Exchange for alerts published by EsperBridge ===
 const ALERTS_EXCHANGE = 'alerts';
+const ALERTS_QUEUE = 'alert_events'; // fixed, durable queue
 
 // === Helper: Load subscriber identity from Fabric wallet ===
 function loadIdentity(identityFile) {
@@ -52,6 +59,77 @@ function loadCA() {
   }
   return fs.readFileSync(caPath);
 }
+  /*
+  // === Helper: Get contract id from rules.json  ===
+  function getRuleDetailsBySensorId(sensorId) {
+    // Read and parse rules.json
+    const data = fs.readFileSync('rules.json', 'utf8');
+    const rulesConfig = JSON.parse(data);
+
+    // Find the rule with the matching sensorId
+    const rule = rulesConfig.rules.find(r => r.sensorId === sensorId);
+
+    if (!rule) {
+      console.log(`❌ No rule found for sensorId: ${sensorId}`);
+      return null;
+    }
+
+    // Return the relevant fields
+    const { contractId, chaincodeFunction } = rule;
+    return { contractId, chaincodeFunction };
+            
+    }*/
+    /*
+    // === Helper : to parse sensorId and sensor value 
+    function parseAlret(alert){
+      let sensorId = null;
+      let avgValue = null;
+      let sensorTime = null;
+      let alertTime = null;
+      //Temperature isA DataTransfer with Env sensorId: String, Env value: Number, Env sensorTimestamp:String, controller:Seller;
+      // Use regex to find sensorId=...
+      const match = alert.raw.match(/sensorId=([^\s,}]+)/);
+
+      if (match) {
+        sensorId = match[1];
+        console.log('✅ Extracted sensorId:', sensorId);
+      } else {
+        console.log('❌ sensorId not found in alert');
+      }
+      // Use regex to find value=...
+       const match2 = alert.raw.match(/avgValue=([^\s,}]+)/);
+
+      if (match2) {
+        avgValue = match2[1];
+        console.log('✅ Extracted avgValue:', avgValue);
+      } else {
+        console.log('❌ avgValue not found in alert');
+      }
+
+      // Use regex to find sensorTime=...
+      const match3 = alert.raw.match(/sensorTimestamp=([^\s,}]+)/);
+
+      if (match3) {
+        sensorTime = match3[1];
+        console.log('✅ Extracted sensorTime:', sensorTime);
+      } else {
+        console.log('❌ sensorTime not found in alert');
+      }
+
+      // Use regex to find alertTime=...
+      const match4 = alert.raw.match(/alertTimestamp=([^\s,}]+)/);
+
+      if (match4) {
+        alertTime = match4[1];
+        console.log('✅ Extracted alertTime:', alertTime);
+      } else {
+        console.log('❌ alertTime not found in alert');
+      }
+
+      return { sensorId, avgValue, sensorTime, alertTime};
+
+    }*/
+
 
 async function startAlertSubscriber() {
   // === Paths ===
@@ -80,7 +158,7 @@ async function startAlertSubscriber() {
   // Ephemeral queue for receiving alerts
   const { queue } = await channel.assertQueue('', {
     exclusive: true,
-    autoDelete: true,
+    autoDelete: false,
     durable: false
   });
 
@@ -100,19 +178,29 @@ async function startAlertSubscriber() {
       } catch {
         alert = { raw: alertMsg };
       }
+       /*
+      // parsing
+      const {sensorId, avgValue, sensorTime, alertTime} = parseAlret(alert);
+      console.log(sensorId,avgValue, sensorTime, alertTime)
 
+      // Get contract id from rules.json to send alret event back to smart contract
+      const { contractId, chaincodeFunction} = getRuleDetailsBySensorId(sensorId)
+      */
+      const chaincodeFn = await executeTransaction(alert);
+
+ 
       // Default/fallback contract & function
-      const contractId = alert.contractId || 'MeatSale_202581716';
-      const chaincodeFn = alert.chaincodeFunction || 'violateObligation_delivery';
+      //const contractId = alert.contractId || 'MeatSale_202581716';
+      //const chaincodeFn = alert.chaincodeFunction || 'violateObligation_delivery';
 
       // Submit transaction to Fabric network
-      const contract = await getContract('Regulator2');
-      const txn = contract.createTransaction(chaincodeFn);
-      const result = await txn.submit(contractId);
+      //const contract = await getContract('Regulator2');
+      //const txn = contract.createTransaction(chaincodeFn);
+      //const result = await txn.submit(contractId);
+      console.log(`✅ Executed ${chaincodeFunction} successfully:`, chaincodeFn);
 
-      console.log(`✅ Smart Contract Triggered: fn=${chaincodeFn}, contract=${contractId}, result=${result.toString()}`);
     } catch (err) {
-      console.error('❌ Submission Error:', err.message);
+      console.error(`❌ Failed to execute :`, err.message);
     }
   }, { noAck: true });
 
@@ -130,112 +218,5 @@ startAlertSubscriber().catch(err => {
 });
 
 
-/*
-'use strict';
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; 
-
-const amqp = require('amqplib');
-const { getContract } = require('../gateway');
-const fs = require('fs');
-const path = require('path');
-
-// === Exchange for alerts published by EsperBridge ===
-const ALERTS_EXCHANGE = 'alerts';
-
-// === Load subscriber identity from Fabric wallet ===
-function loadIdentity(idFile) {
-    if (!fs.existsSync(idFile)) {
-        throw new Error(`❌ Identity file not found: ${idFile}`);
-    }
-    const data = fs.readFileSync(idFile, 'utf8');
-    const json = JSON.parse(data);
-    return {
-        cert: json.credentials.certificate,
-        key: json.credentials.privateKey
-    };
-}
-
-async function startAlertSubscriber() {
-    // Resolve wallet and cert paths
-    const walletDir = path.resolve(__dirname, '..', '..', 'wallet');
-    const certsDir = path.resolve(__dirname, '..', '..', 'certs');
-    const subscriberIdPath = path.join(walletDir, 'buyer_Buyer.id');
-
-    const subscriberId = loadIdentity(subscriberIdPath);
-
-    // === Fabric CA root cert (trusted CA for RabbitMQ) ===
-    const caPath = path.resolve(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'fabric-network-2.2.2',
-        'organizations',
-        'fabric-ca',
-        'org1',
-        'ca-cert.pem'
-    );
-    const caCert = fs.readFileSync(caPath);
-
-    // === Establish secure AMQPS connection ===
-    const conn = await amqp.connect({
-        protocol: 'amqps',
-        hostname: 'rabbitmq-server', // must match CN in rabbitmq-server.crt
-        port: 5671,
-        ca: [caCert],
-        cert: subscriberId.cert,
-        key: subscriberId.key,
-        servername: 'rabbitmq-server', // enforce CN match
-        rejectUnauthorized: true       // ensure trusted certificate only
-    });
-
-    const channel = await conn.createChannel();
-    await channel.assertExchange(ALERTS_EXCHANGE, 'fanout', { durable: true });
-
-    // Ephemeral queue for receiving alerts
-    const { queue } = await channel.assertQueue('', {
-        exclusive: true,
-        autoDelete: true,
-        durable: false
-    });
-
-    await channel.bindQueue(queue, ALERTS_EXCHANGE, '');
-
-    console.log(`📡 Listening securely on exchange "${ALERTS_EXCHANGE}" (TLS active)`);
-
-    // === Message Handler ===
-    channel.consume(queue, async (msg) => {
-        try {
-            const alertMsg = msg.content.toString();
-            console.log('📩 Alert received:', alertMsg);
-
-            // Attempt to parse JSON alert
-            let alert;
-            try {
-                alert = JSON.parse(alertMsg);
-            } catch {
-                alert = { raw: alertMsg };
-            }
-
-            // Default/fallback contract & function
-            const contractId = alert.contractId || "MeatSale_202581716";
-            const chaincodeFn = alert.chaincodeFunction || "violateObligation_delivery";
-
-            // Submit Fabric transaction
-            const contract = await getContract('Regulator2');
-            const txn = contract.createTransaction(chaincodeFn);
-            const result = await txn.submit(contractId);
-
-            console.log(`✅ Smart Contract Triggered: fn=${chaincodeFn}, contract=${contractId}, result=${result.toString()}`);
-        } catch (err) {
-            console.error('❌ Submission Error:', err.message);
-        }
-    }, { noAck: true });
-}
-
-// === Start Subscriber ===
-startAlertSubscriber().catch(console.error);
-*/
 
 

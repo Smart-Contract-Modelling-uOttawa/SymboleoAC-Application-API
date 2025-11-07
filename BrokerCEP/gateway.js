@@ -12,13 +12,16 @@ const { buildCCPOrg1, buildWallet } = require('../AppUtil');
 
 const channelName = 'mychannel';
 //you have to change 'meatsale' to the name of the chaincodeName in the package.json property name e.g., name:'meatsale', name:'vaccine', etc
-const chaincodeName = 'meatsale'; 
+//const chaincodeName = 'meatsale'; 
 const Org1UserId = 'buyer_Buyer'; // Replace this dynamically if needed
 
 let cachedContract = null;
 let cachedGateway = null;
 
-async function getContract(useCommitEvents = true) {
+async function getContract(chaincodeName, useCommitEvents = true) {
+  console.log("chaincodeName-----------------")
+  console.log(chaincodeName)
+  if (chaincodeName == undefined) return null;
   if (cachedContract) return cachedContract;
 
   try {
