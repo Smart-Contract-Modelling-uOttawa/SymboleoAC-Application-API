@@ -23,6 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { executeTransaction } = require('../appAlert');
 const { getRuleDetailsBySensorId } = require('../util');
+const { Console } = require('console');
 
 
 
@@ -165,6 +166,8 @@ async function startAlertSubscriber() {
   await channel.bindQueue(queue, ALERTS_EXCHANGE, '');
   console.log(`📡 Listening securely on exchange "${ALERTS_EXCHANGE}" via mutual TLS...`);
 
+  let chaincodeFn1 = null;
+
   // === Handle Incoming Alerts ===
   channel.consume(queue, async (msg) => {
     try {
@@ -186,7 +189,28 @@ async function startAlertSubscriber() {
       // Get contract id from rules.json to send alret event back to smart contract
       const { contractId, chaincodeFunction} = getRuleDetailsBySensorId(sensorId)
       */
-      const chaincodeFn = await executeTransaction(alert);
+      let chaincodeFn = null;
+      if (chaincodeFn1 == null){
+
+       console.log("I am calling from if");
+       chaincodeFn1 = "Not Null";
+       chaincodeFn = await executeTransaction(alert);
+       chaincodeFn1 = null
+       console.log(`✅ Executed ${alert} successfully from if:`, chaincodeFn);
+
+       }else{
+        await new Promise(r => setTimeout(r, 2000));
+        if(chaincodeFn1 != null){
+        //while (chaincodeFn1 != null) console.log("Waiting ..........");
+
+       console.log("I can call now from else");
+       chaincodeFn1 = "Not Null";
+       chaincodeFn = await executeTransaction(alert);
+       chaincodeFn1 = null
+       console.log(`✅ Executed ${alert} successfully from else:`, chaincodeFn);
+
+        }
+      }
 
  
       // Default/fallback contract & function
@@ -197,7 +221,6 @@ async function startAlertSubscriber() {
       //const contract = await getContract('Regulator2');
       //const txn = contract.createTransaction(chaincodeFn);
       //const result = await txn.submit(contractId);
-      console.log(`✅ Executed ${chaincodeFunction} successfully:`, chaincodeFn);
 
     } catch (err) {
       console.error(`❌ Failed to execute :`, err.message);

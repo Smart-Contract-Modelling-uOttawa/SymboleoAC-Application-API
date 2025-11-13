@@ -5,6 +5,7 @@ const routes = require('./routes');
 const { startEventListeners } = require('./eventListeners');
 const { startPerRoleSubscribers } = require('./roleSubscriber');
 const { getContract } = require('./gateway');
+const { getRuleDetailsBySensorId } = require('./util');
 
 
 app.use(express.json());
@@ -13,7 +14,9 @@ app.use('/api', routes);
 // Listen to smart contract events and publish to RabbitMQ
 startEventListeners();     // Fabric event → RabbitMQ
 (async () => {
-  const contract = await getContract();
+  const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false)
+  const contract = await getContract(chaincodeName, true);
+  //const contract = await getContract();
 
   const parametersObject = {
     buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
@@ -56,6 +59,12 @@ startEventListeners();     // Fabric event → RabbitMQ
     let violateRes = await violateTxn.submit(InitRes.contractId);
     violateRes = JSON.parse(violateRes.toString());
     console.log(`✅ violateObligation_payment result:`, violateRes);
+
+     console.log(`--> violateObligation_delivery`);
+    const violateTxnDel = contract.createTransaction('violateObligation_delivery');
+    let violateResDel = await violateTxnDel.submit(InitRes.contractId);
+    violateResDel = JSON.parse(violateResDel.toString());
+    console.log(`✅ violateObligation_delivery result:`, violateResDel);
 
   } catch (err) {
     console.error(`❌ Error submitting transactions: ${err.message}`);

@@ -11,7 +11,7 @@
       "window": "time(10 min)",
       "having": "count(*) >= 1",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
-      "chaincodeFunction": "trigger_paid"
+      "chaincodeFunction": "trigger_temperatureAlert"
     },
     {
       "id": "humidityRule",
@@ -24,7 +24,7 @@
       "window": "time(5 min)",
       "having": "count(*) >= 1",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, min(value) as avgValue",
-      "chaincodeFunction": "trigger_paid"
+      "chaincodeFunction": "trigger_temperatureAlert"
     }
   ]
 }

@@ -1,8 +1,10 @@
 const { getContract } = require('./gateway');
 const { publish } = require('./rabbitMQ-Publish');
+const { getRuleDetailsBySensorId } = require('./util');
 
 async function startEventListeners() {
-  const contract = await getContract();
+  const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false)
+  const contract = await getContract(chaincodeName, true);
 
   // General-purpose listener
   const listener = async (event) => {
@@ -50,33 +52,3 @@ module.exports = { startEventListeners };
 
 
 
-
-/*const { getContract } = require('./gateway');
-const { publish } = require('./rabbitMQ-Publish');
-
-async function startEventListeners() {
-  const contract = await getContract();
-
-  await contract.addContractListener('unified-listener', 'MeatSale', async (err, event) => {
-    if (err) {
-      console.error('❌ Event listener error:', err);
-      return;
-    }
-
-    const payload = JSON.parse(event.payload.toString());
-    const { eventType, role, contractId, timestamp, message, roles } = payload;
-
-    console.log(`📡 [Fabric Event] Type: ${eventType} | Role(s): ${role || roles} | Contract: ${contractId}`);
-
-    // Determine target roles
-    const targetRoles = roles || [role];
-    const msg = message || `[${eventType}] on contract ${contractId} at ${timestamp}`;
-
-    await publish(msg, targetRoles);
-  });
-
-  console.log('🟢 Unified Fabric event listener running...');
-}
-
-module.exports = { startEventListeners };
-*/

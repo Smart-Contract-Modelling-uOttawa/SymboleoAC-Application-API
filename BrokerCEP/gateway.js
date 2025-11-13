@@ -13,7 +13,7 @@ const { buildCCPOrg1, buildWallet } = require('../AppUtil');
 const channelName = 'mychannel';
 //you have to change 'meatsale' to the name of the chaincodeName in the package.json property name e.g., name:'meatsale', name:'vaccine', etc
 //const chaincodeName = 'meatsale'; 
-const Org1UserId = 'buyer_Buyer'; // Replace this dynamically if needed
+const Org1UserId = 'Regulator2'; // Replace this dynamically if needed //buyer_Buyer
 
 let cachedContract = null;
 let cachedGateway = null;
@@ -120,30 +120,3 @@ module.exports = {
   getUserHFNameFromWallet,
 };
 
-/*const { Gateway, Wallets } = require('fabric-network');
-const fs = require('fs');
-const path = require('path');
-
-let contract; // cache
-
-async function getContract() {
-  if (contract) return contract;
-
-  const ccpPath = path.resolve(__dirname, 'connection-org1.json');
-  const ccp = JSON.parse(fs.readFileSync(ccpPath));
-  const wallet = await Wallets.newFileSystemWallet(path.join(__dirname, '../wallet'));
-
-  const gateway = new Gateway();
-  await gateway.connect(ccp, {
-    wallet,
-    identity: 'Org1UserId',
-    discovery: { enabled: true, asLocalhost: true }
-  });
-
-  const network = await gateway.getNetwork('mychannel');
-  contract = network.getContract('meatsale');
-  return contract;
-}
-
-module.exports = { getContract };
-*/

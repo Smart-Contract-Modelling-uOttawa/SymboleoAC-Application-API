@@ -52,39 +52,3 @@ module.exports = { startPerRoleSubscribers };
 
 
 
-/*const amqp = require('amqplib');
-
-const exchangeName = 'eventExchange';
-
-async function startRoleSubscriber() {
-  try {
-    const connection = await amqp.connect('amqp://localhost');
-    const channel = await connection.createChannel();
-
-    await channel.assertExchange(exchangeName, 'direct', { durable: false });
-    const { queue } = await channel.assertQueue('roles_listener_queue', { durable: false });
-
-    const roles = ['buyer', 'seller', 'supplier', 'assessor', 'regulator', 'shipper', 'admin'];
-    for (const role of roles) {
-      await channel.bindQueue(queue, exchangeName, `role.${role}`);
-    }
-
-    channel.consume(queue, (msg) => {
-      if (msg?.content) {
-        try {
-          const payload = msg.content.toString();
-          console.log(`📩 [Subscriber] Received:`, payload);
-        } catch (e) {
-          console.error('❌ Failed to parse message:', e.message);
-        }
-      }
-    }, { noAck: true });
-
-    console.log('🟢 Role-based subscriber started.');
-  } catch (err) {
-    console.error('❌ Error in role subscriber:', err.message);
-  }
-}
-
-module.exports = { startRoleSubscriber };
-*/

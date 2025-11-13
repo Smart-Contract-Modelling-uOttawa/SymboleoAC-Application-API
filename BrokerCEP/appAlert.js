@@ -32,15 +32,21 @@ async function executeTransaction(alert) {
       console.log(sensorId,avgValue, sensorTime, alertTime)
 
       // Get contract id from rules.json to send alret event back to smart contract
-      const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId)
+      const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true)
       console.log("contractId, txnName, chaincodeName")
       console.log(contractId, chaincodeFunction, chaincodeName)
       txnName = chaincodeFunction;
     
     const contract = await getContract(chaincodeName, true);
 
+    console.log("cachedContractId: " + cachedContractId);
+
+
     // 1️⃣ Initialize contract only once
-    if (!cachedContractId && chaincodeName != undefined ) {
+    let res = null;
+    while (cachedContractId == null) {
+
+    //if (cachedContractId == null && chaincodeName != undefined ) {
     console.log(`--> Submitting transaction: init`);
     const initParams = JSON.stringify({
       buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
@@ -68,14 +74,17 @@ async function executeTransaction(alert) {
     initRes = JSON.parse(initRes.toString());
     cachedContractId = initRes.contractId; // ✅ store for reuse
     console.log(`✅ Init successful: ${initRes.contractId}`);
-  }
+
+  //}if
+}
+
 
     // 2️⃣ Call the provided transaction name
     console.log(`--> Submitting transaction: ${txnName}`);
     
 
     // For most transactions, pass the contractId as parameter
-    let res = null;
+    res = null;
     for (let attempt = 1; attempt <= 5; attempt++) {
       
   try {
