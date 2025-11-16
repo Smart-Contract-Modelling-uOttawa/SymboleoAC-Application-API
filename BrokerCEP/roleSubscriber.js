@@ -1,17 +1,23 @@
 
 const amqp = require('amqplib');
+const { getRuleDetailsBySensorId } = require('./util');
+
 
 const exchangeName = 'eventExchange';
 
-// List of roles to listen for MeatSale Conract
-// change it to the list of roles name
-const roles = ['buyer name', 'seller name', 'supplier', 'assessor', 'regulator', 'shipper', 'admin'];
+//const roles = ['buyer name', 'seller name', 'supplier', 'assessor', 'regulator', 'shipper', 'admin'];
 
 // List of roles to listen for Vaccine Conract
 //
-
+let roles;
 async function startPerRoleSubscribers() {
+  
+// List of roles to listen for Conract notification
+// change it to the list of roles name
+ roles = await getRuleDetailsBySensorId("100",false);
+
   try {
+
 
     const connection = await amqp.connect('amqp://localhost');
     const channel = await connection.createChannel();
@@ -19,7 +25,10 @@ async function startPerRoleSubscribers() {
     await channel.assertExchange(exchangeName, 'direct', { durable: false });
     
 
+
+
     for (const role of roles) {
+
       const queueName = `queue.role.${role}`;
 
       // Declare a dedicated queue for this role

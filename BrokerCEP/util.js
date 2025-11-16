@@ -13,6 +13,11 @@ let contractId = null, chaincodeFunction = null, chaincodeName = null;
     const rulesPath = path.resolve(__dirname, 'CEP', 'rules.json');
     const data = fs.readFileSync(rulesPath, 'utf8')
     const rulesConfig = JSON.parse(data);
+    
+
+    if(!exist && sensorId == "100" ){
+      return rulesConfig.roles;
+    }
 
     if (exist){
 
@@ -27,6 +32,7 @@ let contractId = null, chaincodeFunction = null, chaincodeName = null;
     // Return the relevant fields
      ({contractId, chaincodeFunction, chaincodeName} = rule);
     }else{
+
         const rule = rulesConfig.rules[0];
         ({contractId, chaincodeFunction, chaincodeName} = rule);
 

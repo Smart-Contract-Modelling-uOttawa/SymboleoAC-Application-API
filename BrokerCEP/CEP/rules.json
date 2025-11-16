@@ -26,5 +26,6 @@
       "select": "sensorId, sensorTimestamp, count(*) as cnt, min(value) as avgValue",
       "chaincodeFunction": "trigger_temperatureAlert"
     }
-  ]
+  ],
+  "roles":["buyer name", "seller name", "supplier", "assessor", "regulator", "shipper", "admin"]
 }
