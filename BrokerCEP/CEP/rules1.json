@@ -1,0 +1,31 @@
+{
+  "rules": [
+    {
+      "id": "tempRule",
+      "contractId": "MeatSale_202581716",
+      "chaincodeName":"meatsale",
+      "eventType": "SensorEvent",
+      "sensorType": "temperature",
+      "sensorId": "temperature_sensor_tempRule",
+      "condition": "value > 25",
+      "window": "time(10 min)",
+      "having": "count(*) >= 1",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "chaincodeFunction": "trigger_temperatureAlert"
+    },
+    {
+      "id": "humidityRule",
+      "contractId": "MeatSale_202581716",
+      "chaincodeName":"meatsale",
+      "eventType": "SensorEvent",
+      "sensorType": "humidity",
+      "sensorId": "humidity_sensor_humidityRule",
+      "condition": "value < 30",
+      "window": "time(5 min)",
+      "having": "count(*) >= 1",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, min(value) as avgValue",
+      "chaincodeFunction": "trigger_temperatureAlert"
+    }
+  ],
+  "roles":["buyer name", "seller name", "supplier", "assessor", "regulator", "shipper", "admin"]
+}

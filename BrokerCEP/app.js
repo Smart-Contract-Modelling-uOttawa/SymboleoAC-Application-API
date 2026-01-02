@@ -1,3 +1,6 @@
+// Test Notification 
+// Test Two senarios 1) Scenario: payment is violated 2) delivery is violated
+
 const express = require('express');
 const app = express();
 
@@ -17,7 +20,7 @@ startEventListeners();     // Fabric event → RabbitMQ
   const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false)
   const contract = await getContract(chaincodeName, true);
   //const contract = await getContract();
-
+/*
   const parametersObject = {
     buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
     sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -37,7 +40,28 @@ startEventListeners();     // Fabric event → RabbitMQ
     effDate: "2025-08-28T17:49:41.422Z",
     delDueDateDays: 3,
     interestRate: 2
-  };
+  };*/
+
+   const parametersObject = {
+        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
+        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
+        assessorP: { returnAddress: "11 copper", name: "assessor name", org: "Food Inspection Agency", dept: "finance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
+        shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
+        adminP: { name: "admin", org: "org1", dept: "finance", org: "Blockcahin", dept: "finance"},
+        barcodeP: {},
+        qnt: 2,
+        qlt: 3,
+        amt: 3,
+        curr: 1,
+        payDueDate: "2024-10-28T17:49:41.422Z",
+        delAdd: "delAdd",
+        effDate: "2026-08-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
+    };
 
   const parameters = JSON.stringify(parametersObject);
 
@@ -53,6 +77,12 @@ startEventListeners();     // Fabric event → RabbitMQ
     let paidRes = await paidTxn.submit(JSON.stringify({ contractId: InitRes.contractId, event: {} }));
     paidRes = JSON.parse(paidRes.toString());
     console.log(`✅ trigger_paid result:`, paidRes);
+
+    console.log(`--> trigger_unLoaded`);
+    const loadTxn = contract.createTransaction('trigger_unLoaded');
+    let loadRes = await loadTxn.submit(JSON.stringify({ contractId: InitRes.contractId, event: {} }));
+    loadRes = JSON.parse(loadRes.toString());
+    console.log(`✅ trigger_unLoaded result:`, loadRes);
 
     console.log(`--> violateObligation_payment`);
     const violateTxn = contract.createTransaction('violateObligation_payment');

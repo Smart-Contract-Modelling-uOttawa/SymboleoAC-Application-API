@@ -3,12 +3,14 @@ const { publish } = require('./rabbitMQ-Publish');
 const { getRuleDetailsBySensorId } = require('./util');
 
 async function startEventListeners() {
+  //console.log("I am inside Event Listeners")
   const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false)
   const contract = await getContract(chaincodeName, true);
 
   // General-purpose listener
   const listener = async (event) => {
     try {
+      //console.log("I am in Listener")
       const payload = event.payload?.toString();
       const message = JSON.parse(payload);
 

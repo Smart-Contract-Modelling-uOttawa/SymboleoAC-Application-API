@@ -108,7 +108,7 @@ public class EsperBridge {
 
                     //String alert = "🚨 ALERT " + rule.get("id") + ": " + newData[0].getUnderlying();
                     System.out.println(alert);
-                    System.out.println("*******" +newData[0].getUnderlying());
+                    //System.out.println("*******" +newData[0].getUnderlying());
                     //System.out.println("-------" +newData[1].getUnderlying());
 
 
@@ -140,7 +140,7 @@ public class EsperBridge {
                 String sensorId = (String) sensorData.get("sensorId");
                 Double value = Double.valueOf(sensorData.get("value").toString());
                 String sensorTimestamp = (String) sensorData.get("timestamp");
-                System.out.println("Time------------" + sensorTimestamp);
+                //System.out.println("Time------------" + sensorTimestamp);
 
 
                 // ✅ Step 1: Check enrollment in wallet
@@ -188,8 +188,8 @@ public class EsperBridge {
 
     // === Build a TLS-encrypted connection to RabbitMQ using mutual TLS (EXTERNAL) ===
     private static com.rabbitmq.client.Connection getRabbitConnection() throws Exception {
-        System.out.println("📁 CA Path: " + CA_PATH.toAbsolutePath());
-        System.out.println("📁 PKCS12 Path: " + P12_PATH.toAbsolutePath());
+        //System.out.println("📁 CA Path: " + CA_PATH.toAbsolutePath());
+        //System.out.println("📁 PKCS12 Path: " + P12_PATH.toAbsolutePath());
 
         // Load CA certificate (trust store)
         CertificateFactory cf = CertificateFactory.getInstance("X.509");

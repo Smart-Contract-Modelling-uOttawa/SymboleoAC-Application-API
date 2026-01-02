@@ -28,8 +28,12 @@ async function startPerRoleSubscribers() {
 
 
     for (const role of roles) {
+      //console.log("I am in roleSubscriber")
+      //console.log(role)
 
       const queueName = `queue.role.${role}`;
+       //console.log("queueName")
+       //console.log(queueName)
 
       // Declare a dedicated queue for this role
       await channel.assertQueue(queueName, { durable: false });

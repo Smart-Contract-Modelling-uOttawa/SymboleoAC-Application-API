@@ -192,7 +192,7 @@ async function startAlertSubscriber() {
       let chaincodeFn = null;
       if (chaincodeFn1 == null){
 
-       console.log("I am calling from if");
+       //console.log("I am calling from if");
        chaincodeFn1 = "Not Null";
        chaincodeFn = await executeTransaction(alert);
        chaincodeFn1 = null
@@ -203,7 +203,7 @@ async function startAlertSubscriber() {
         if(chaincodeFn1 != null){
         //while (chaincodeFn1 != null) console.log("Waiting ..........");
 
-       console.log("I can call now from else");
+       //console.log("I can call now from else");
        chaincodeFn1 = "Not Null";
        chaincodeFn = await executeTransaction(alert);
        chaincodeFn1 = null

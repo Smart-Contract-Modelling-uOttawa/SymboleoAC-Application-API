@@ -13,7 +13,7 @@ module.exports.publish = async (message, roles) => {
     // we use the name of the role not the type to distinguish different names of the same type. such as org1 is a buyer
     //and transportation organazation is a buyer as well
     for (const role of roles) {
-      console.log("role:", role);
+      //console.log("role:", role);
       const roleName = String(role || '').toLowerCase().trim();
 
       if (!roleName) {

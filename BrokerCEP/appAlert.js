@@ -1,4 +1,5 @@
 // appAlert.js
+// Test IoT data stream with smart contract, IoT, CEP and broker
 const express = require('express');
 const app = express();
 
@@ -33,13 +34,13 @@ async function executeTransaction(alert) {
 
       // Get contract id from rules.json to send alret event back to smart contract
       const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true)
-      console.log("contractId, txnName, chaincodeName")
-      console.log(contractId, chaincodeFunction, chaincodeName)
+      //console.log("contractId, txnName, chaincodeName")
+      //console.log(contractId, chaincodeFunction, chaincodeName)
       txnName = chaincodeFunction;
     
     const contract = await getContract(chaincodeName, true);
 
-    console.log("cachedContractId: " + cachedContractId);
+    //console.log("cachedContractId: " + cachedContractId);
 
 
     // 1️⃣ Initialize contract only once
@@ -48,7 +49,7 @@ async function executeTransaction(alert) {
 
     //if (cachedContractId == null && chaincodeName != undefined ) {
     console.log(`--> Submitting transaction: init`);
-    const initParams = JSON.stringify({
+    /*const initParams = JSON.stringify({
       buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
       sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
       transportCoP: { returnAddress: "60 Orleans", name: "transportCo name" },
@@ -67,6 +68,26 @@ async function executeTransaction(alert) {
       effDate: "2025-08-28T17:49:41.422Z",
       delDueDateDays: 3,
       interestRate: 2
+    });*/
+    const initParams = JSON.stringify({
+        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
+        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
+        assessorP: { returnAddress: "11 copper", name: "assessor name", org: "Food Inspection Agency", dept: "finance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
+        shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
+        adminP: { name: "admin", org: "org1", dept: "finance", org: "Blockcahin", dept: "finance"},
+        barcodeP: {},
+        qnt: 2,
+        qlt: 3,
+        amt: 3,
+        curr: 1,
+        payDueDate: "2024-10-28T17:49:41.422Z",
+        delAdd: "delAdd",
+        effDate: "2026-08-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
     });
 
     const initTxn = contract.createTransaction('init');
@@ -126,7 +147,7 @@ async function executeTransaction(alert) {
 
       if (match) {
         sensorId = match[1];
-        console.log('✅ Extracted sensorId:', sensorId);
+        //console.log('✅ Extracted sensorId:', sensorId);
       } else {
         console.log('❌ sensorId not found in alert');
       }
@@ -135,7 +156,7 @@ async function executeTransaction(alert) {
 
       if (match2) {
         avgValue = match2[1];
-        console.log('✅ Extracted avgValue:', avgValue);
+        //console.log('✅ Extracted avgValue:', avgValue);
       } else {
         console.log('❌ avgValue not found in alert');
       }
@@ -145,7 +166,7 @@ async function executeTransaction(alert) {
 
       if (match3) {
         sensorTime = match3[1];
-        console.log('✅ Extracted sensorTime:', sensorTime);
+        //console.log('✅ Extracted sensorTime:', sensorTime);
       } else {
         console.log('❌ sensorTime not found in alert');
       }
@@ -155,7 +176,7 @@ async function executeTransaction(alert) {
 
       if (match4) {
         alertTime = match4[1];
-        console.log('✅ Extracted alertTime:', alertTime);
+        //console.log('✅ Extracted alertTime:', alertTime);
       } else {
         console.log('❌ alertTime not found in alert');
       }

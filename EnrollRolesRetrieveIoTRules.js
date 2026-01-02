@@ -22,15 +22,37 @@ const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 const ORG_MSP = 'Org1MSP';
 
 //parameters
+/*
 const parametersObject = {
         buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
         transportCoP: { returnAddress: "60 Orleans", name: "transportCo name" },
         assessorP: { returnAddress: "11 copper", name: "assessor name" },
         regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
-        storageP: { address: "55 Riduea" },
+        storageP: { address: "55 Riduea", name:"John" },
         shipperP: { name: "shipper name" },
         adminP: { name: "admin", org: "org1", dept: "finance" },
+        barcodeP: {},
+        qnt: 2,
+        qlt: 3,
+        amt: 3,
+        curr: 1,
+        payDueDate: "2024-10-28T17:49:41.422Z",
+        delAdd: "delAdd",
+        effDate: "2026-08-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
+    };*/
+
+     const parametersObject = {
+        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
+        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
+        assessorP: { returnAddress: "11 copper", name: "assessor name", org: "Food Inspection Agency", dept: "finance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
+        shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
+        adminP: { name: "admin", org: "org1", dept: "finance", org: "Blockcahin", dept: "finance"},
         barcodeP: {},
         qnt: 2,
         qlt: 3,
@@ -121,7 +143,6 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
         throw new Error(`❌ Init failed: ${createError.message}`);
     }
 
-
     const policyBytes = await contract.evaluateTransaction('getRolePolicy',contractId);
     //await gateway.disconnect();
 
@@ -152,12 +173,75 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
         try {
             await registerAndEnrollUser(caClient, wallet, ORG_MSP, uid, affiliation, role);
             results.push({ userId: uid, status: '✅ enrolled' });
+
         } catch (err) {
             results.push({ userId: uid, status: `❌ failed: ${err.message}` });
         }
     }
 
     return { message: 'Bootstrap completed', results };
+}
+
+// retrieve IoT rules from Symboleo contract
+async function retrieveIoTRules(userId, affiliation) {
+    const { contract, gateway } = await getContract(userId);
+
+    let contractId;
+    try {
+        console.log(`--> Submit Transaction: init`);
+        const transaction = contract.createTransaction('init');
+        let InitRes = await transaction.submit(parameters);
+        InitRes = JSON.parse(InitRes.toString());
+        console.log(`--> Init Response:`, InitRes);
+
+        contractId = InitRes.contractId;
+        if (!contractId) {
+            throw new Error('❌ Contract ID not returned in init result');
+        }
+    } catch (createError) {
+        console.error(`<-- Submit Failed: init - ${createError}`);
+        throw new Error(`❌ Init failed: ${createError.message}`);
+    }
+
+    //  Retrieve IoT rules from chaincode
+    const ruleBytes = await contract.evaluateTransaction(
+        'getIoTCondition',
+        contractId
+    );
+
+    const record = JSON.parse(ruleBytes.toString());
+    console.log("record:", record);
+
+    const { rules, hash } = record.record;
+
+    //  Verify integrity
+    const rulesStr = JSON.stringify(rules, null, 2);
+    const computedHash = crypto
+        .createHash('sha256')
+        .update(JSON.stringify(rules))
+        .digest('hex');
+
+    if (computedHash !== hash) {
+        throw new Error('❌ IoT Rules tampering detected (hash mismatch)');
+    }
+
+    //  Write rules.json to BrokerCEP/CEP/
+    const rulesPath = path.join(
+        __dirname,
+        'BrokerCEP',
+        'CEP',
+        'rules.json'
+    );
+
+    fs.writeFileSync(rulesPath, rulesStr, 'utf8');
+
+    console.log(`✅ IoT rules saved to ${rulesPath}`);
+
+    return {
+        message: 'Retrieve IoT Rules completed',
+        contractId,
+        rules
+    };
 }
 
 (async () => {
@@ -182,6 +266,11 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
 
         const bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1');
         console.log('✅ Users bootstrapped:', bootstrapResult);
+
+        const rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1');
+        console.log('✅ IoT Rules Retrived:', rulesIoTResult);   
+
+        
     } catch (err) {
         console.error('❌ Startup error:', err);
     }

@@ -11,7 +11,7 @@ const SENSOR_QUEUE = 'sensor_data';
 // === Helper: Load sensor identity from Fabric wallet ===
 function loadSensorIdentity(sensorId) {
   const walletPath = path.join(__dirname, '..', '..', 'wallet', `${sensorId}.id`);
-  console.log(walletPath)
+  //console.log(walletPath)
   if (!fs.existsSync(walletPath)) {
     throw new Error(`❌ Identity file not found: ${walletPath}`);
   }
@@ -22,8 +22,8 @@ function loadSensorIdentity(sensorId) {
   const cert = json.credentials.certificate.replace(/\\n/g, '\n').trim();
   const key = json.credentials.privateKey.replace(/\\n/g, '\n').trim();
 
-  console.log('🔍 Using cert snippet:', cert.slice(0, 100));
-  console.log('🔍 Using key snippet:', key.slice(0, 100));
+  //console.log('🔍 Using cert snippet:', cert.slice(0, 100));
+  //console.log('🔍 Using key snippet:', key.slice(0, 100));
 
 
   //return true;
@@ -76,11 +76,11 @@ async function publishSensorData(sensorId, value, username, password) {
     console.error(`❌ [${sensorId}] Publish failed: ${err.message}`);
   }
 }
-
+//-20 v 2
 // === Test Sensors ===
 const sensors = [
-  { id: 'temperature_sensor_tempRule', base: 27, variation: 10, username: 'temperature_sensor_tempRule', password: 'sensorpass' },
-  { id: 'humidity_sensor_humidityRule', base: 50, variation: 20, username: 'humidity_sensor_humidityRule', password: 'sensorpass' },
+  { id: 'temperature_sensor_temperatureRule', base: 2, variation: 1.5, username: 'temperature_sensor_tempRule', password: 'sensorpass' },
+  { id: 'humidity_sensor_humidityRule', base: 88, variation: 3, username: 'humidity_sensor_humidityRule', password: 'sensorpass' },
   { id: 'vibration_sensor_demo', base: 5, variation: 3, username: 'vibration_sensor_demo', password: 'wrongpass' }, // unauthorized
 ];
 
