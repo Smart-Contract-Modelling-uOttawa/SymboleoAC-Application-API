@@ -49,26 +49,8 @@ async function executeTransaction(alert) {
 
     //if (cachedContractId == null && chaincodeName != undefined ) {
     console.log(`--> Submitting transaction: init`);
-    /*const initParams = JSON.stringify({
-      buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
-      sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
-      transportCoP: { returnAddress: "60 Orleans", name: "transportCo name" },
-      assessorP: { returnAddress: "11 copper", name: "assessor name" },
-      regulatorP: { name: "Hassan", org: "Canada Import Inc", dept: "finance" },
-      storageP: { address: "55 Riduea" },
-      shipperP: { name: "shipper name" },
-      adminP: { name: "admin", org: "org1", dept: "finance" },
-      barcodeP: {},
-      qnt: 2,
-      qlt: 3,
-      amt: 3,
-      curr: 1,
-      payDueDate: "2025-10-28T17:49:41.422Z",
-      delAdd: "delAdd",
-      effDate: "2025-08-28T17:49:41.422Z",
-      delDueDateDays: 3,
-      interestRate: 2
-    });*/
+    //parameters meatsale
+    /*
     const initParams = JSON.stringify({
         buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -88,7 +70,22 @@ async function executeTransaction(alert) {
         effDate: "2026-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    });
+    });*/
+
+     //parameters vaccine
+     const initParams = JSON.stringify({
+      "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
+      "mcdcP":  {name:"mcdc", org:"Government of Canada", dept: "finance"},
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "finance"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "finance"},
+      "approval": true,
+      "unitPrice": 19.50,
+       "minQuantity": 100,
+       "maxQuantity" : 500,
+       "temperature":-80
+      });
 
     const initTxn = contract.createTransaction('init');
     let initRes = await initTxn.submit(initParams);

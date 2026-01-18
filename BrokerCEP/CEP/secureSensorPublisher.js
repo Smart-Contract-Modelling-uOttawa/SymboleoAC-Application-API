@@ -77,12 +77,22 @@ async function publishSensorData(sensorId, value, username, password) {
   }
 }
 //-20 v 2
-// === Test Sensors ===
-const sensors = [
+// === Test Sensors === for meatsale case study
+/*const sensors = [
   { id: 'temperature_sensor_temperatureRule', base: 2, variation: 1.5, username: 'temperature_sensor_tempRule', password: 'sensorpass' },
   { id: 'humidity_sensor_humidityRule', base: 88, variation: 3, username: 'humidity_sensor_humidityRule', password: 'sensorpass' },
   { id: 'vibration_sensor_demo', base: 5, variation: 3, username: 'vibration_sensor_demo', password: 'wrongpass' }, // unauthorized
+];*/
+
+// === Test Sensors === for vaccine case study
+const sensors = [
+  { id: 'temperature_sensor_temperatureRule', base: -95, variation: 10, username: 'temperature_sensor_tempRule', password: 'sensorpass' },
+  { id: 'humidity_sensor_humidityRule', base: 65, variation: 20, username: 'humidity_sensor_humidityRule', password: 'sensorpass' },
+  { id: 'shock_sensor_shockRule', base: 1, variation: 3, username: 'shock_sensor_shockRule', password: 'sensorpass' },
+  { id: 'lightExposure_sensor_lightExposureRule', base: 0, variation: 1, username: 'lightExposure_sensor_lightExposureRule', password: 'sensorpass' },
+  { id: 'sealOpen_sensor_sealOpenRule', base: 0, variation: 1, username: 'sealOpen_sensor_sealOpenRule', password: 'sensorpass' },
 ];
+
 
 // Publish values periodically
 setInterval(() => {

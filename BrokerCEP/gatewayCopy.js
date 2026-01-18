@@ -13,56 +13,14 @@ const { buildCCPOrg1, buildWallet } = require('../AppUtil');
 const channelName = 'mychannel';
 //you have to change 'meatsale' to the name of the chaincodeName in the package.json property name e.g., name:'meatsale', name:'vaccine', etc
 //const chaincodeName = 'meatsale'; 
-const Org1UserId = 'Regulator2'; // Replace this dynamically if needed //buyer_Buyer //Regulator2
+const Org1UserId = 'buyer_Buyer'; // Replace this dynamically if needed //buyer_Buyer //Regulator2
 
-//let cachedContract = null;
-//let cachedGateway = null;
-
-const cache = new Map(); // identityLabel -> { contract, gateway }
-
-async function getContractAs(chaincodeName, identityLabel, useCommitEvents = true) {
-  if (!chaincodeName) return null;
-  if (!identityLabel) throw new Error('identityLabel is required');
-
-  const cacheKey = `${identityLabel}::${chaincodeName}`;
-  if (cache.has(cacheKey)) return cache.get(cacheKey).contract;
-
-  try {
-    const ccpOrg1 = buildCCPOrg1();
-    const walletPath = path.join(__dirname, '../wallet');
-    const wallet = await buildWallet(Wallets, walletPath);
-
-    const gateway = new Gateway();
-    const connectOptions = {
-      wallet,
-      identity: identityLabel, // ✅ who signs = role identity
-      discovery: { enabled: true, asLocalhost: true },
-    };
-
-    if (!useCommitEvents) {
-      connectOptions.eventHandlerOptions = EventStrategies.NONE;
-    }
-
-    await gateway.connect(ccpOrg1, connectOptions);
-
-    const network = await gateway.getNetwork(channelName);
-    const contract = network.getContract(chaincodeName);
-
-    cache.set(cacheKey, { contract, gateway });
-
-    console.log(`Gateway connected as '${identityLabel}'. Contract '${chaincodeName}' on '${channelName}'.`);
-    return contract;
-  } catch (err) {
-    console.error(`Failed to connect as '${identityLabel}':`, err);
-    throw err;
-  }
-}
-
+let cachedContract = null;
+let cachedGateway = null;
 
 async function getContract(chaincodeName, useCommitEvents = true) {
   //console.log("chaincodeName-----------------")
   //console.log(chaincodeName)
-  return getContractAs(chaincodeName, Org1UserId, useCommitEvents);
   if (chaincodeName == undefined) return null;
   if (cachedContract) return cachedContract;
 
@@ -146,18 +104,38 @@ async function getUserHFNameFromWallet() {
   return hfName;
 }
 
+async function getContractAs(chaincodeName, identityLabel, asLocalhost = true) {
+  // adjust these paths to match your project
+  const ccpPath = path.resolve(__dirname, 'connection-org1.json');
+  const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+
+  const walletPath = path.resolve(__dirname, 'wallet');
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+  const gateway = new Gateway();
+  await gateway.connect(ccp, {
+    wallet,
+    identity: identityLabel, // ✅ THIS is the “role” in Fabric
+    discovery: { enabled: true, asLocalhost },
+  });
+
+  const network = await gateway.getNetwork('mychannel'); // adjust if different
+  const contract = network.getContract(chaincodeName);
+
+  return { contract, gateway };
+}
+
+
 async function disconnectGateway() {
-  if (cache.size > 0) {
-    console.log('🔌 Disconnecting Gateways...');
-    for (const { gateway } of cache.values()) {
-      try { gateway.disconnect(); } catch (e) {}
-    }
-    cache.clear();
+  if (cachedGateway) {
+    console.log('🔌 Disconnecting Gateway...');
+    cachedGateway.disconnect();
+    cachedContract = null;
+    cachedGateway = null;
   }
 }
 
 module.exports = {
-  getContractAs,  
   getContract,
   disconnectGateway,
   getUserHFNameFromWallet,

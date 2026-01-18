@@ -15,35 +15,14 @@ const app = express();
 app.use(bodyParser.json());
 
 const channelName = 'mychannel';
-const chaincodeName = 'meatsale';
+const chaincodeName = 'vaccineprocurementc'; //OR "meatsale" based on the chaincode name for the case study
 const walletPath = path.join(__dirname, 'wallet');
 const ccpPath = path.resolve(__dirname, '..', 'fabric-network-2.2.2', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 const ORG_MSP = 'Org1MSP';
 
-//parameters
-/*
-const parametersObject = {
-        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
-        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
-        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name" },
-        assessorP: { returnAddress: "11 copper", name: "assessor name" },
-        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
-        storageP: { address: "55 Riduea", name:"John" },
-        shipperP: { name: "shipper name" },
-        adminP: { name: "admin", org: "org1", dept: "finance" },
-        barcodeP: {},
-        qnt: 2,
-        qlt: 3,
-        amt: 3,
-        curr: 1,
-        payDueDate: "2024-10-28T17:49:41.422Z",
-        delAdd: "delAdd",
-        effDate: "2026-08-28T17:49:41.422Z",
-        delDueDateDays: 3,
-        interestRate: 2
-    };*/
-
+//parameters meatsale
+/* 
      const parametersObject = {
         buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -63,7 +42,22 @@ const parametersObject = {
         effDate: "2026-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    };
+    };*/
+
+    //parameters vaccine
+     const parametersObject = {
+      "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
+      "mcdcP":  {name:"mcdc", org:"Government of Canada", dept: "finance"},
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "finance"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "finance"},
+      "approval": true,
+      "unitPrice": 19.50,
+       "minQuantity": 100,
+       "maxQuantity" : 500,
+       "temperature":-80
+      }
 
     const parameters = JSON.stringify(parametersObject);
 

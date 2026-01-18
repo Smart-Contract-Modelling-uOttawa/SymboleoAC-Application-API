@@ -1,0 +1,44 @@
+{
+  "rules": [
+    {
+      "id": "temperatureRule",
+      "contractId": "MeatSale_202511261",
+      "chaincodeName": "meatsale",
+      "eventType": "SensorEvent",
+      "sensorType": "temperature",
+      "sensorId": "temperature_sensor_temperatureRule",
+      "condition": "value > 2",
+      "window": "time(10 min)",
+      "having": "count(*) >= 1",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "chaincodeFunction": "trigger_temperature"
+    },
+    {
+      "id": "humidityRule",
+      "contractId": "MeatSale_202511261",
+      "chaincodeName": "meatsale",
+      "eventType": "SensorEvent",
+      "sensorType": "humidity",
+      "sensorId": "humidity_sensor_humidityRule",
+      "condition": "value < 85 OR value > 90",
+      "window": "time(10 min)",
+      "having": "count(*) >= 1",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "chaincodeFunction": "trigger_humidity"
+    }
+  ],
+  "roles": [
+    "seller name",
+    "buyer name",
+    "transportCo name",
+    "assessor name",
+    "regulator",
+    "John",
+    "shipper name",
+    "admin"
+  ],
+  "metadata": {
+    "storedBy": "x509::/OU=client/OU=org1/OU=department1/CN=Regulator2::/C=US/ST=North Carolina/O=Hyperledger/OU=Fabric/CN=fabric-ca-server",
+    "timestamp": "2025-12-26T01:25:42.310Z"
+  }
+}
