@@ -9,7 +9,7 @@ const { buildCAClient, enrollAdmin } = require('./CAUtil');
 // Paths
 const walletPath = path.join(__dirname, 'wallet');
 // Update the .josn file to the file name that is generated from the retrived retrieveIoTRules() function e.g., rulesMeatSale0000.json, rulesVaccine0000.json
-const rulesPath = path.join(__dirname, 'BrokerCEP', 'CEP', 'rules.json');
+const rulesPath = path.join(__dirname, 'BrokerCEP', 'CEP', 'rulesVaccineProcurementSharedParty_20260126230520661.json');
 const ccpPath = path.resolve(__dirname, '..', 'fabric-network-2.2.2',
     'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
@@ -32,7 +32,8 @@ async function enrollSensorsFromRules() {
     for (const rule of rules) {
         const sensorType = rule.sensorType;
         // Build unique sensorId per contract & type
-        const sensorId = `${sensorType}_sensor_${rule.id}`;
+        const contractId = rule.contractId;
+        const sensorId = `${rule.sensorType}_${contractId}`;
 
         // Already enrolled?
         const existing = await wallet.get(sensorId);

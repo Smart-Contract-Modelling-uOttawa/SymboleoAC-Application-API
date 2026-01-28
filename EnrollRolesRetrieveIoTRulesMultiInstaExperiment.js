@@ -15,14 +15,15 @@ const app = express();
 app.use(bodyParser.json());
 
 const channelName = 'mychannel';
-const chaincodeName = 'vaccineprocurementc'; //OR "meatsale" based on the chaincode name for the case study
+let chaincodeName;  //OR "meatsale" based on the chaincode name for the case study
 const walletPath = path.join(__dirname, 'wallet');
 const ccpPath = path.resolve(__dirname, '..', 'fabric-network-2.2.2', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 const ORG_MSP = 'Org1MSP';
 
+/* parameters for meatsale and vaccineprocurmentc chaincode
 //parameters meatsale
-/* 
+
      const parametersObject = {
          buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -42,7 +43,7 @@ const ORG_MSP = 'Org1MSP';
         effDate: "2025-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    };*/
+    };
 
     //parameters vaccine
     
@@ -59,8 +60,85 @@ const ORG_MSP = 'Org1MSP';
        "maxQuantity" : 500,
        "temperature":-80
       }
+     */
 
-    const parameters = JSON.stringify(parametersObject);
+    //parameters for meatsalesharedparty and vaccineprocurmentsharedparty chaincode
+    //parameters meatsale shared party (first instance)
+     const initParamsMeatSale1 = {
+        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
+        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
+        assessorP: { returnAddress: "11 copper", name: "assessor name", org: "Food Inspection Agency", dept: "finance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
+        shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
+        adminP: { name: "admin", org: "org1", dept: "finance"},
+        barcodeP: {},
+        qnt: 2,
+        qlt: 3,
+        amt: 3,
+        curr: 1,
+        payDueDate: "2024-10-28T17:49:41.422Z",
+        delAdd: "70 Glouxter",
+        effDate: "2025-08-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
+    };
+
+   //parameters meatsale shared party (another isntance)
+    const initParamsMeatSale2 = {
+        buyerP: { warehouse: "40 Albert", name: "Samco", org: "Samco Import Inc", dept: "procurement" },
+        sellerP: { returnAddress: "332 Howard", name: "Danube", org: "Danube Export Inc", dept: "sales" },
+        transportCoP: { returnAddress: "22 Nepeon", name: "DHL", org: "DHL Export Inc", dept: "logistics"},
+        assessorP: { returnAddress: "252 Wayndat", name: "Smith", org: "Foodi Inspection Agency", dept: "qualityAssurance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "44 Lyon", name:"Adel", org: "Canada Import Inc", dept: "warehouse"},
+        shipperP: { name: "Fedex", org: "Internationl Export Inc", dept: "logistics" },
+        adminP: { name: "admin", org: "org1", dept: "finance"},
+        barcodeP: {},
+        qnt: 10,
+        qlt: 3,
+        amt: 6,
+        curr: 3,
+        payDueDate: "2026-02-28T17:49:41.422Z",
+        delAdd: "40 Albert",
+        effDate: "2026-03-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
+    };
+
+      //parameters vaccine shared party
+      const initParamsVaccine1 = {
+      "pfizerP":  {name:"PfizerEU", org:"Pfizer Pharma GmbH", dept: "manufacturing"},
+      "buyerP": { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "inspection"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "logistics"},
+      "approval": true,
+      "unitPrice": 19.50,
+       "minQuantity": 100,
+       "maxQuantity" : 500,
+       "temperature":-80
+      };
+
+      //parameters vaccine shared party 2 (another instance)
+      const initParamsVaccine2 = {
+      "pfizerP":  {name:"PfizerHQ", org:"Pfizer Global Export Operations", dept: "supplyChain"},
+      "buyerP": { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "inspection"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "logistics"},
+      "approval": true,
+      "unitPrice": 25,
+       "minQuantity": 200,
+       "maxQuantity" : 600,
+       "temperature":-80
+      };
+
+    let parameters;
+    //let contractId;
 
 async function getContract(userId) {
     const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -109,7 +187,10 @@ async function storePolicy(userId) {
         );
 
         
-        return JSON.parse(result.toString());
+        //return JSON.parse(result.toString());
+        console.log("contractId")
+        console.log(contractId)
+        return { contractId: contractId, policyResult: JSON.parse(result.toString()) };
     } catch (err) {
         console.error(err);
       
@@ -118,9 +199,9 @@ async function storePolicy(userId) {
 }
 
 
-async function bootstrapUsersFromPolicy(userId, affiliation) {
+async function bootstrapUsersFromPolicy(userId, affiliation, contractId) {
     const { contract, gateway } = await getContract(userId);
-
+/* close it to keep one instance at a time
     let contractId;
     try {
         console.log(`--> Submit Transaction: init`);
@@ -137,7 +218,7 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
         console.error(`<-- Submit Failed: init - ${createError}`);
         throw new Error(`❌ Init failed: ${createError.message}`);
     }
-
+*/
     const policyBytes = await contract.evaluateTransaction('getRolePolicy',contractId);
     //await gateway.disconnect();
 
@@ -164,7 +245,9 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
 
     const results = [];
     for (const role of roles) {
-        const uid = `${role.name}_${role.type}`;
+        //const uid = `${role.name}_${role.type}`;
+        const uid = `${contractId}_${role.name}_${role.type}`;
+
         try {
             await registerAndEnrollUser(caClient, wallet, ORG_MSP, uid, affiliation, role);
             results.push({ userId: uid, status: '✅ enrolled' });
@@ -178,9 +261,9 @@ async function bootstrapUsersFromPolicy(userId, affiliation) {
 }
 
 // retrieve IoT rules from Symboleo contract
-async function retrieveIoTRules(userId, affiliation) {
+async function retrieveIoTRules(userId, affiliation,contractId) {
     const { contract, gateway } = await getContract(userId);
-
+    /* close it to keep one instance at a time
     let contractId;
     try {
         console.log(`--> Submit Transaction: init`);
@@ -196,7 +279,7 @@ async function retrieveIoTRules(userId, affiliation) {
     } catch (createError) {
         console.error(`<-- Submit Failed: init - ${createError}`);
         throw new Error(`❌ Init failed: ${createError.message}`);
-    }
+    }*/
 
     //  Retrieve IoT rules from chaincode
     const ruleBytes = await contract.evaluateTransaction(
@@ -225,7 +308,7 @@ async function retrieveIoTRules(userId, affiliation) {
         __dirname,
         'BrokerCEP',
         'CEP',
-        'rules.json'
+        `rules${contractId}.json`
     );
 
     fs.writeFileSync(rulesPath, rulesStr, 'utf8');
@@ -238,6 +321,8 @@ async function retrieveIoTRules(userId, affiliation) {
         rules
     };
 }
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 (async () => {
     try {
@@ -255,20 +340,82 @@ async function retrieveIoTRules(userId, affiliation) {
         
         const regulatorKey = regulatorIdentity.credentials.privateKey;
         const regulatorPub = regulatorIdentity.credentials.certificate; // This is the public certificate
+        
+        //vaccineprocurementsharedparty
+        parameters = JSON.stringify(initParamsVaccine1);
+        chaincodeName = 'vaccineprocurementsharedparty';
 
-        const policyResult = await storePolicy('Regulator2'); //, regulatorKey, regulatorPub
-        console.log('✅ Policy stored:', policyResult);
+        
+        let { contractId: contractId1, policyResult } = await storePolicy('Regulator2'); //, regulatorKey, regulatorPub
+        console.log('✅ Policy stored for instance:', contractId1, policyResult);
+        await sleep(1100);
 
-        const bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1');
+        let bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1', contractId1);
         console.log('✅ Users bootstrapped:', bootstrapResult);
 
-        const rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1');
+        let rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1', contractId1);
         console.log('✅ IoT Rules Retrived:', rulesIoTResult);   
+
+        //meatsalesharedparty
+        parameters = JSON.stringify(initParamsMeatSale1);
+        chaincodeName = 'meatsalesharedparty';
+
+        let { contractId: contractId2, policyResult2 } = await storePolicy('Regulator2'); //, regulatorKey, regulatorPub
+         console.log('✅ Policy stored for instance:', contractId2, policyResult2);
+         await sleep(1100);
+
+         bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1', contractId2);
+        console.log('✅ Users bootstrapped:', bootstrapResult);
+
+         rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1', contractId2);
+        console.log('✅ IoT Rules Retrived:', rulesIoTResult);  
+        
+        // another instance of meatsale and vaccine
+        //vaccineprocurementsharedparty
+        parameters = JSON.stringify(initParamsVaccine2);
+        chaincodeName = 'vaccineprocurementsharedparty';
+
+        const { contractId:contractId3, policyResult3 } = await storePolicy('Regulator2'); //, regulatorKey, regulatorPub
+        console.log('✅ Policy stored for instance:', contractId3, policyResult3);
+        await sleep(1100);
+
+        bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1', contractId3);
+        console.log('✅ Users bootstrapped:', bootstrapResult);
+
+        rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1', contractId3);
+        console.log('✅ IoT Rules Retrived:', rulesIoTResult);    
+
+        //meatsalesharedparty
+        parameters = JSON.stringify(initParamsMeatSale2);
+        chaincodeName = 'meatsalesharedparty';
+        
+        await sleep(1100);
+        const { contractId:contractId4, policyResult4 } = await storePolicy('Regulator2'); //, regulatorKey, regulatorPub
+        console.log('✅ Policy stored for instance:', contractId4, policyResult4);
+        
+
+        bootstrapResult = await bootstrapUsersFromPolicy('Regulator2', 'org1.department1', contractId4);
+        console.log('✅ Users bootstrapped:', bootstrapResult);
+
+        rulesIoTResult = await retrieveIoTRules('Regulator2', 'org1.department1', contractId4);
+        console.log('✅ IoT Rules Retrived:', rulesIoTResult);   
+
+    //store the instances in JSON file
+    const instances = {
+    createdAt: new Date().toISOString(),
+    contractIds: [contractId1, contractId2, contractId3, contractId4]
+        };
+
+    const filePath = path.join(__dirname, "BrokerCEP", "CEP", "instances.json");
+
+    fs.writeFileSync(filePath, JSON.stringify(instances, null, 2), "utf8");
+    console.log("✅ Saved instances list to:", filePath);
 
         
     } catch (err) {
         console.error('❌ Startup error:', err);
     }
+
 })();
 
 const PORT = process.env.PORT || 3000;

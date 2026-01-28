@@ -100,8 +100,7 @@ public class EsperBridge {
                         rule.get("id"),
                         alertTimestamp,
                         newData[0].getUnderlying());*/
-                   String alert = String.format("🚨 ALERT %s: %s, alertTimestamp=%s}",
-                        rule.get("id"),
+                   String alert = String.format("🚨 ALERT: %s, alertTimestamp=%s}",
                         newData[0].getUnderlying().toString().replaceAll("}$", ""),
                         alertTimestamp);
 

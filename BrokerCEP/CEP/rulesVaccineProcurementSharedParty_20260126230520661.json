@@ -2,11 +2,11 @@
   "rules": [
     {
       "id": "temperatureRule",
-      "contractId": "VaccineProcurementC_20260254",
-      "chaincodeName": "vaccineprocurementc",
+      "contractId": "VaccineProcurementSharedParty_20260126230520661",
+      "chaincodeName": "vaccineprocurementsharedparty",
       "eventType": "SensorEvent",
       "sensorType": "temperature",
-      "sensorId": "temperature_sensor_temperatureRule",
+      "sensorId": "temperature_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > -80",
       "window": "time(10 min)",
       "having": "count(*) >= 5",
@@ -15,11 +15,11 @@
     },
     {
       "id": "humidityRule",
-      "contractId": "VaccineProcurementC_20260254",
-      "chaincodeName": "vaccineprocurementc",
+      "contractId": "VaccineProcurementSharedParty_20260126230520661",
+      "chaincodeName": "vaccineprocurementsharedparty",
       "eventType": "SensorEvent",
       "sensorType": "humidity",
-      "sensorId": "humidity_sensor_humidityRule",
+      "sensorId": "humidity_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > 70",
       "window": "time(15 min)",
       "having": "count(*) >= 3",
@@ -28,11 +28,11 @@
     },
     {
       "id": "shockRule",
-      "contractId": "VaccineProcurementC_20260254",
-      "chaincodeName": "vaccineprocurementc",
+      "contractId": "VaccineProcurementSharedParty_20260126230520661",
+      "chaincodeName": "vaccineprocurementsharedparty",
       "eventType": "SensorEvent",
       "sensorType": "shock",
-      "sensorId": "shock_sensor_shockRule",
+      "sensorId": "shock_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > 2.5",
       "window": "time(5 min)",
       "having": "count(*) >= 1",
@@ -41,11 +41,11 @@
     },
     {
       "id": "lightExposureRule",
-      "contractId": "VaccineProcurementC_20260254",
-      "chaincodeName": "vaccineprocurementc",
+      "contractId": "VaccineProcurementSharedParty_20260126230520661",
+      "chaincodeName": "vaccineprocurementsharedparty",
       "eventType": "SensorEvent",
       "sensorType": "lightExposure",
-      "sensorId": "lightExposure_sensor_lightExposureRule",
+      "sensorId": "lightExposure_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > 0",
       "window": "time(1 min)",
       "having": "count(*) >= 1",
@@ -54,11 +54,11 @@
     },
     {
       "id": "sealOpenRule",
-      "contractId": "VaccineProcurementC_20260254",
-      "chaincodeName": "vaccineprocurementc",
+      "contractId": "VaccineProcurementSharedParty_20260126230520661",
+      "chaincodeName": "vaccineprocurementsharedparty",
       "eventType": "SensorEvent",
       "sensorType": "sealOpen",
-      "sensorId": "sealOpen_sensor_sealOpenRule",
+      "sensorId": "sealOpen_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value = 1",
       "window": "time(1 min)",
       "having": "count(*) >= 1",
@@ -69,13 +69,13 @@
   "roles": [
     "regulator",
     "admin",
-    "pfizer",
-    "mcdc",
+    "PfizerHQ",
+    "buyer name",
     "fda",
     "worldcourier"
   ],
   "metadata": {
     "storedBy": "x509::/OU=client/OU=org1/OU=department1/CN=Regulator2::/C=US/ST=North Carolina/O=Hyperledger/OU=Fabric/CN=fabric-ca-server",
-    "timestamp": "2026-01-25T04:03:19.836Z"
+    "timestamp": "2026-01-26T23:05:29.567Z"
   }
 }

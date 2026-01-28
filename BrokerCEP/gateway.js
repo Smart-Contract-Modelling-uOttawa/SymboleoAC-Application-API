@@ -50,7 +50,7 @@ async function getContractAs(chaincodeName, identityLabel, useCommitEvents = tru
 
     cache.set(cacheKey, { contract, gateway });
 
-    console.log(`Gateway connected as '${identityLabel}'. Contract '${chaincodeName}' on '${channelName}'.`);
+    //console.log(`Gateway connected as '${identityLabel}'. Contract '${chaincodeName}' on '${channelName}'.`);
     return contract;
   } catch (err) {
     console.error(`Failed to connect as '${identityLabel}':`, err);

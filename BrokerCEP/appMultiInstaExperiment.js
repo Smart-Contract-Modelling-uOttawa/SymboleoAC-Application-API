@@ -5,10 +5,10 @@ const express = require('express');
 const app = express();
 
 const routes = require('./routes');
-const { startEventListeners } = require('./eventListeners');
-const { startPerRoleSubscribers } = require('./roleSubscriber');
+const { startEventListeners } = require('./eventListenersMultiInstaExperiment');
+const { startPerRoleSubscribers } = require('./roleSubscriberMultiInstaExperiment');
 const { getContract } = require('./gateway');
-const { getRuleDetailsBySensorId } = require('./util');
+const { getRuleDetailsBySensorId } = require('./utilMultiInstaExperiment');
 const { getContractAs } = require('./gateway');
 
 
@@ -19,7 +19,7 @@ app.use('/api', routes);
 // Listen to smart contract events and publish to RabbitMQ
 startEventListeners();     // Fabric event → RabbitMQ
 (async () => {
-  const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false)
+  const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId("",false, 'rules.json')
   //const contract = await getContract(chaincodeName, true);
   const regulatorContract    = await getContractAs(chaincodeName, 'Regulator2', true);
   const buyerContract    = await getContractAs(chaincodeName, 'buyer_Buyer', true);
@@ -68,11 +68,13 @@ startEventListeners();     // Fabric event → RabbitMQ
   const parameters = JSON.stringify(parametersObject);
 
   try {
+    /* we close it for multi instance and the contract is still opened beacuse we called init in appAlertMulti....
     console.log(`--> Submit Transaction: init`);
     const initTxn = regulatorContract.createTransaction('init');
     let InitRes = await initTxn.submit(parameters);
     InitRes = JSON.parse(InitRes.toString());
     console.log(`✅ Init successful: ${InitRes.contractId}`);
+    */
    /*
     console.log(`--> trigger_paid`);
     const paidTxn = buyerContract.createTransaction('trigger_paid');

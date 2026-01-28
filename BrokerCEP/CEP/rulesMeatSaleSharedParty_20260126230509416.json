@@ -1,0 +1,44 @@
+{
+  "rules": [
+    {
+      "id": "temperatureRule",
+      "contractId": "MeatSaleSharedParty_20260126230509416",
+      "chaincodeName": "meatsalesharedparty",
+      "eventType": "SensorEvent",
+      "sensorType": "temperature",
+      "sensorId": "temperatureRule_MeatSaleSharedParty_20260126230509416",
+      "condition": "value > 2",
+      "window": "time(10 min)",
+      "having": "count(*) >= 3",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "chaincodeFunction": "trigger_temperature"
+    },
+    {
+      "id": "humidityRule",
+      "contractId": "MeatSaleSharedParty_20260126230509416",
+      "chaincodeName": "meatsalesharedparty",
+      "eventType": "SensorEvent",
+      "sensorType": "humidity",
+      "sensorId": "humidityRule_MeatSaleSharedParty_20260126230509416",
+      "condition": "value < 85 OR value > 90",
+      "window": "time(10 min)",
+      "having": "count(*) >= 2",
+      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "chaincodeFunction": "trigger_humidity"
+    }
+  ],
+  "roles": [
+    "seller name",
+    "buyer name",
+    "transportCo name",
+    "assessor name",
+    "regulator",
+    "John",
+    "shipper name",
+    "admin"
+  ],
+  "metadata": {
+    "storedBy": "x509::/OU=client/OU=org1/OU=department1/CN=Regulator2::/C=US/ST=North Carolina/O=Hyperledger/OU=Fabric/CN=fabric-ca-server",
+    "timestamp": "2026-01-26T23:05:20.329Z"
+  }
+}

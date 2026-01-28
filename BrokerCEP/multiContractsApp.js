@@ -1,12 +1,11 @@
-// appAlert.js
-// Test IoT data stream with smart contract, IoT, CEP and broker
+
 const express = require('express');
 const app = express();
 
 const routes = require('./routes');
-const { startEventListeners } = require('./eventListeners');
-const { startPerRoleSubscribers } = require('./roleSubscriber');
-const { getRuleDetailsBySensorId } = require('./util');
+const { startEventListeners } = require('./eventListenersMultiInstaExperiment');
+const { startPerRoleSubscribers } = require('./roleSubscriberMultiInstaExperiment');
+const { getRuleDetailsBySensorId } = require('./utilMultiInstaExperiment');
 const { getContract } = require('./gateway');
 
 
@@ -33,7 +32,7 @@ async function executeTransaction(alert) {
       console.log(sensorId,avgValue, sensorTime, alertTime)
 
       // Get contract id from rules.json to send alret event back to smart contract
-      const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true)
+      const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true, 'rules.json')
       //console.log("contractId, txnName, chaincodeName")
       //console.log(contractId, chaincodeFunction, chaincodeName)
       txnName = chaincodeFunction;
@@ -49,9 +48,8 @@ async function executeTransaction(alert) {
 
     //if (cachedContractId == null && chaincodeName != undefined ) {
     console.log(`--> Submitting transaction: init`);
-    //parameters meatsale
-    /*
-    const initParams = JSON.stringify({
+    //parameters original meatsale
+     const initParamsMeatSale1 = {
         buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
         transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
@@ -59,21 +57,43 @@ async function executeTransaction(alert) {
         regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
         storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
         shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
-        adminP: { name: "admin", org: "org1", dept: "finance", org: "Blockcahin", dept: "finance"},
+        adminP: { name: "admin", org: "org1", dept: "finance"},
         barcodeP: {},
         qnt: 2,
         qlt: 3,
         amt: 3,
         curr: 1,
         payDueDate: "2024-10-28T17:49:41.422Z",
-        delAdd: "delAdd",
-        effDate: "2026-08-28T17:49:41.422Z",
+        delAdd: "70 Glouxter",
+        effDate: "2025-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    });*/
+    };
 
-     //parameters vaccine
-     const initParams = JSON.stringify({
+   //parameters meatsale shared party
+    const initParamsMeatSale2 = JSON.stringify({
+        buyerP: { warehouse: "40 Albert", name: "Samco", org: "Samco Import Inc", dept: "procurement" },
+        sellerP: { returnAddress: "332 Howard", name: "Danube", org: "Danube Export Inc", dept: "sales" },
+        transportCoP: { returnAddress: "22 Nepeon", name: "DHL", org: "DHL Export Inc", dept: "logistics"},
+        assessorP: { returnAddress: "252 Wayndat", name: "Smith", org: "Foodi Inspection Agency", dept: "qualityAssurance" },
+        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
+        storageP: { address: "44 Lyon", name:"Adel", org: "Canada Import Inc", dept: "warehouse"},
+        shipperP: { name: "Fedex", org: "Internationl Export Inc", dept: "logistics" },
+        adminP: { name: "admin", org: "org1", dept: "finance"},
+        barcodeP: {},
+        qnt: 10,
+        qlt: 3,
+        amt: 6,
+        curr: 3,
+        payDueDate: "2026-02-28T17:49:41.422Z",
+        delAdd: "40 Albert",
+        effDate: "2026-03-28T17:49:41.422Z",
+        delDueDateDays: 3,
+        interestRate: 2
+    });
+
+     //parameters original vaccine
+     /*const initParamsVaccine1 = JSON.stringify({
       "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
       "mcdcP":  {name:"mcdc", org:"Government of Canada", dept: "finance"},
       "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
@@ -84,6 +104,36 @@ async function executeTransaction(alert) {
       "unitPrice": 19.50,
        "minQuantity": 100,
        "maxQuantity" : 500,
+       "temperature":-80
+      });*/
+      
+      //parameters vaccine shared party
+      const initParamsVaccine2 = JSON.stringify({
+      "pfizerP":  {name:"PfizerEU", org:"Pfizer Pharma GmbH", dept: "manufacturing"},
+      "buyerP": { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "inspection"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "logistics"},
+      "approval": true,
+      "unitPrice": 19.50,
+       "minQuantity": 100,
+       "maxQuantity" : 500,
+       "temperature":-80
+      });
+
+      //parameters vaccine shared party 2 (another instance)
+      const initParamsVaccine3 = JSON.stringify({
+      "pfizerP":  {name:"PfizerHQ", org:"Pfizer Global Export Operations", dept: "supplyChain"},
+      "buyerP": { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
+      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
+      "adminP": {name: "admin", org: "org1", dept: "finance"},
+      "fdaP": {name:"fda", org:"FDA", dept: "inspection"},
+      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "logistics"},
+      "approval": true,
+      "unitPrice": 25,
+       "minQuantity": 200,
+       "maxQuantity" : 600,
        "temperature":-80
       });
 

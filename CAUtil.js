@@ -5,7 +5,7 @@
  */
 
 'use strict';
-
+const forge = require('node-forge');
 const adminUserId = 'admin';
 const adminUserPasswd = 'adminpw';
 
@@ -53,11 +53,28 @@ exports.enrollAdmin = async (caClient, wallet, orgMspId) => {
 exports.registerAndEnrollUser = async (caClient, wallet, orgMspId, userId, affiliation, attributeValue) => {
 	try {
 		// Check to see if we've already enrolled the user
-		const userIdentity = await wallet.get(userId);
+		let userIdentity = await wallet.get(userId);
 		if (userIdentity) {
 			console.log(`An identity for the user ${userId} already exists in the wallet`);
 			return;
 		}
+
+		//to allow multiple user of the same type
+        /*let count = 1;
+		let tempUser = userId;
+		while(userIdentity){
+			const { dept, org } = extractDeptOrgFromIdentity(userIdentity);
+			console.log("*******************")
+			console.log(dept)
+			console.log(org)
+			if(dept === attributeValue.dept && org === attributeValue.org){
+				console.log(`An identity for the user ${userId} already exists in the wallet`);
+				return;
+			}
+			userId = tempUser + (count).toString();
+			userIdentity = await wallet.get(userId);
+			count++;
+		}*/
 
 		// Must use an admin to register a new user
 		const adminIdentity = await wallet.get(adminUserId);
@@ -73,11 +90,13 @@ exports.registerAndEnrollUser = async (caClient, wallet, orgMspId, userId, affil
 
 		// Register the user, enroll the user, and import the new identity into the wallet.
 		// if affiliation is specified by client, the affiliation value must be configured in CA
-		console.log('attribute Value: ',  `${attributeValue}`)//`party1_${attributeValue}`
+		console.log('attribute Value: ',  `${attributeValue.dept}`)//`party1_${attributeValue}`
 		const attributes = [{name: 'HF.name', value: `${attributeValue.name}`, ecert:true}, 
 			{ name: 'HF.role', value: `${attributeValue.type}`, ecert: true },
-			{name: 'department', value: 'finance', ecert:true},
-		{name: 'organization', value: 'Canada Import Inc', ecert:true}];
+			{name: 'department', value: `${attributeValue.dept}`, ecert:true},
+		{name: 'organization', value: `${attributeValue.org}`, ecert:true}];
+		
+
 
 		const secret = await caClient.register({
 			affiliation: affiliation,
@@ -170,3 +189,6 @@ exports.buildStaticCAClient = (caURL, caTLSCert, caName) =>{
     // Return the Fabric CA client
     return caService;
 };
+
+
+

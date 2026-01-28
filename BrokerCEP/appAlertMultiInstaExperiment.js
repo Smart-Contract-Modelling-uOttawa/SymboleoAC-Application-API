@@ -4,9 +4,9 @@ const express = require('express');
 const app = express();
 
 const routes = require('./routes');
-const { startEventListeners } = require('./eventListeners');
-const { startPerRoleSubscribers } = require('./roleSubscriber');
-const { getRuleDetailsBySensorId } = require('./util');
+const { startEventListeners } = require('./eventListenersMultiInstaExperiment');
+const { startPerRoleSubscribers } = require('./roleSubscriberMultiInstaExperiment');
+const { getRuleDetailsBySensorId } = require('./utilMultiInstaExperiment');
 const { getContract } = require('./gateway');
 
 
@@ -31,12 +31,16 @@ async function executeTransaction(alert) {
      // parsing
       const {sensorId, avgValue, sensorTime, alertTime} = parseAlret(alert);
       console.log(sensorId,avgValue, sensorTime, alertTime)
+      const contractId = sensorId.substring(sensorId.indexOf("_") + 1);
+
 
       // Get contract id from rules.json to send alret event back to smart contract
-      const { contractId, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true)
+      const { contractIdRule: contractIdRule, chaincodeFunction, chaincodeName} = await getRuleDetailsBySensorId(sensorId,true,  `rules${contractId}.json`)
       //console.log("contractId, txnName, chaincodeName")
       //console.log(contractId, chaincodeFunction, chaincodeName)
       txnName = chaincodeFunction;
+
+      cachedContractId = contractId;
     
     const contract = await getContract(chaincodeName, true);
 
@@ -45,56 +49,12 @@ async function executeTransaction(alert) {
 
     // 1️⃣ Initialize contract only once
     let res = null;
-    while (cachedContractId == null) {
+    //while (cachedContractId == null) {
 
     //if (cachedContractId == null && chaincodeName != undefined ) {
-    console.log(`--> Submitting transaction: init`);
+    //console.log(`--> Submitting transaction: init`);
     //parameters meatsale
-    /*
-    const initParams = JSON.stringify({
-        buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
-        sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
-        transportCoP: { returnAddress: "60 Orleans", name: "transportCo name", org: "Argentina Export Inc", dept: "finance"},
-        assessorP: { returnAddress: "11 copper", name: "assessor name", org: "Food Inspection Agency", dept: "finance" },
-        regulatorP: { name: "regulator", org: "Canada Import Inc", dept: "finance" },
-        storageP: { address: "55 Riduea", name:"John", org: "Canada Import Inc", dept: "finance"},
-        shipperP: { name: "shipper name", org: "Argentina Export Inc", dept: "finance" },
-        adminP: { name: "admin", org: "org1", dept: "finance", org: "Blockcahin", dept: "finance"},
-        barcodeP: {},
-        qnt: 2,
-        qlt: 3,
-        amt: 3,
-        curr: 1,
-        payDueDate: "2024-10-28T17:49:41.422Z",
-        delAdd: "delAdd",
-        effDate: "2026-08-28T17:49:41.422Z",
-        delDueDateDays: 3,
-        interestRate: 2
-    });*/
-
-     //parameters vaccine
-     const initParams = JSON.stringify({
-      "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
-      "mcdcP":  {name:"mcdc", org:"Government of Canada", dept: "finance"},
-      "regulatorP": {name: "regulator", org: "Canada Import Inc", dept: "finance"},
-      "adminP": {name: "admin", org: "org1", dept: "finance"},
-      "fdaP": {name:"fda", org:"FDA", dept: "finance"},
-      "worldcourierP":{name:"worldcourier", org:"worldcourier Company", dept: "finance"},
-      "approval": true,
-      "unitPrice": 19.50,
-       "minQuantity": 100,
-       "maxQuantity" : 500,
-       "temperature":-80
-      });
-
-    const initTxn = contract.createTransaction('init');
-    let initRes = await initTxn.submit(initParams);
-    initRes = JSON.parse(initRes.toString());
-    cachedContractId = initRes.contractId; // ✅ store for reuse
-    console.log(`✅ Init successful: ${initRes.contractId}`);
-
-  //}if
-}
+    //}
 
 
     // 2️⃣ Call the provided transaction name
@@ -108,7 +68,7 @@ async function executeTransaction(alert) {
   try {
     // Create a fresh transaction on each retry
     const txn = contract.createTransaction(txnName);
-   res = await txn.submit(JSON.stringify({ contractId: cachedContractId, event: {sensorId: sensorId, value: avgValue, sensorTimestamp: sensorTime} }));
+    res = await txn.submit(JSON.stringify({ contractId: cachedContractId, event: {sensorId: sensorId, value: avgValue, sensorTimestamp: sensorTime} }));
 
    break; // ✅ success, exit retry loop
     //return res;

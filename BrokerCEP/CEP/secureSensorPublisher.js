@@ -100,4 +100,4 @@ setInterval(() => {
     const value = sensor.base + Math.floor(Math.random() * sensor.variation);
     publishSensorData(sensor.id, value, sensor.username, sensor.password);
   });
-}, 5000);
+}, 10000); // every 10 seconds
