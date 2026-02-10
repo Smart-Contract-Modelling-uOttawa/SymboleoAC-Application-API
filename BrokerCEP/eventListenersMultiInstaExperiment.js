@@ -42,8 +42,8 @@ for (const contractId of contractIds) {
       const eventTx = event.getTransactionEvent();
       const block = eventTx.getBlockEvent();
 
-      console.log(`🔗 Transaction: ${eventTx.transactionId} | Status: ${eventTx.status}`);
-      console.log(`🧱 Block: ${block.blockNumber.toString()}`);
+      //console.log(`🔗 Transaction: ${eventTx.transactionId} | Status: ${eventTx.status}`);
+      //console.log(`🧱 Block: ${block.blockNumber.toString()}`);
 
       // Extract useful fields from asset (payload)
       //const { eventType, contractId, message, timestamp } = message;
@@ -52,6 +52,8 @@ for (const contractId of contractIds) {
       //console.log(message.event.roles)
 
       const targetRoles =  message.event.roles
+      //console.log("Lisnter targetRoles")
+      //console.log(targetRoles)
       //const finalMessage = message 
       //|| `[${event.eventName}] ${eventType || ''} on contract ${contractId} at ${timestamp || new Date().toISOString()}`;
 

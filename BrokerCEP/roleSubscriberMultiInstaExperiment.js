@@ -36,8 +36,8 @@ if (!Array.isArray(contractIds) || contractIds.length === 0) {
 for (const contractId of contractIds) {
 
  roles = await getRuleDetailsBySensorId("100",false, `rules${contractId}.json`);
- console.log("**********************************")
- console.log(roles)
+ //console.log("**********************************")
+ //console.log(roles)
 
   try {
 
@@ -57,6 +57,8 @@ for (const contractId of contractIds) {
 
       // Start consuming from this role-specific queue
       channel.consume(queueName, (msg) => {
+        //console.log("consume      queueName")
+        //console.log(queueName)
         if (msg?.content) {
           try {
             const payload = msg.content.toString();

@@ -8,7 +8,7 @@
       "sensorType": "temperature",
       "sensorId": "temperatureRule_MeatSaleSharedParty_20260126230531127",
       "condition": "value > 2",
-      "window": "time(10 min)",
+      "window": "time(2 min)",
       "having": "count(*) >= 3",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_temperature"
@@ -21,7 +21,7 @@
       "sensorType": "humidity",
       "sensorId": "humidityRule_MeatSaleSharedParty_20260126230531127",
       "condition": "value < 85 OR value > 90",
-      "window": "time(10 min)",
+      "window": "time(2 min)",
       "having": "count(*) >= 2",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_humidity"

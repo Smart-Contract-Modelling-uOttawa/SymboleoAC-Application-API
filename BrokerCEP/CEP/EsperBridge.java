@@ -72,6 +72,8 @@ public class EsperBridge {
 
         // 3️⃣ Deploy EPL rules dynamically from rules.json
         for (Map<String, Object> rule : rules) {
+
+            /*
             String condition = (String) rule.get("condition");
             String window = (String) rule.get("window");
             String having = (String) rule.get("having");
@@ -81,6 +83,52 @@ public class EsperBridge {
                 "select %s from SensorEvents(%s).win:%s having %s",
                 select, condition, window, having
             );
+            */
+           String condition = (String) rule.get("condition");
+                String window = (String) rule.get("window");
+                String having = (String) rule.get("having");
+                String select = (String) rule.get("select");
+                String ruleSensorId = (String) rule.get("sensorId");
+
+                boolean hasAggregate =
+                    select.contains("count(") ||
+                    select.contains("avg(") ||
+                    select.contains("sum(") ||
+                    select.contains("max(") ||
+                    select.contains("min(");
+
+                boolean hasWindow = (window != null && !window.trim().isEmpty());
+                boolean hasHaving = (having != null && !having.trim().isEmpty());
+
+                // Force per-rule sensor filtering (prevents temperatureRule matching lightExposure, etc.)
+                String safeSensorId = ruleSensorId.replace("'", "''");
+                String whereClause = "sensorId = '" + safeSensorId + "' AND (" + condition + ")";
+
+                String epl;
+
+                if (hasWindow && hasAggregate) {
+                    epl = String.format(
+                        "select %s from SensorEvents.win:%s where %s group by sensorId",
+                        select, window.trim(), whereClause
+                    );
+                } else if (hasWindow) {
+                    epl = String.format(
+                        "select %s from SensorEvents.win:%s where %s",
+                        select, window.trim(), whereClause
+                    );
+                } else {
+                    epl = String.format(
+                        "select %s from SensorEvents where %s",
+                        select, whereClause
+                    );
+                }
+
+                if (hasHaving) {
+                    epl += " having " + having.trim();
+                }
+
+
+                //System.out.println("8888888888888888888888 epl:" + epl);
 
             CompilerArguments cargs = new CompilerArguments(config);
             EPCompiled compiled = compiler.compile(epl, cargs);

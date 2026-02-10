@@ -8,8 +8,8 @@
       "sensorType": "temperature",
       "sensorId": "temperature_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > -80",
-      "window": "time(10 min)",
-      "having": "count(*) >= 5",
+      "window": "time(2 min)",
+      "having": "count(*) > 5",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_temperature"
     },
@@ -21,8 +21,8 @@
       "sensorType": "humidity",
       "sensorId": "humidity_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > 70",
-      "window": "time(15 min)",
-      "having": "count(*) >= 3",
+      "window": "time(2 min)",
+      "having": "count(*) > 3",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_humidity"
     },
@@ -33,10 +33,10 @@
       "eventType": "SensorEvent",
       "sensorType": "shock",
       "sensorId": "shock_VaccineProcurementSharedParty_20260126230520661",
-      "condition": "value > 2.5",
-      "window": "time(5 min)",
-      "having": "count(*) >= 1",
-      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "condition": "value > 5",
+      "window": "",
+      "having": "",
+      "select": "sensorId, sensorTimestamp, avg(value) as avgValue",
       "chaincodeFunction": "trigger_shock"
     },
     {
@@ -47,9 +47,9 @@
       "sensorType": "lightExposure",
       "sensorId": "lightExposure_VaccineProcurementSharedParty_20260126230520661",
       "condition": "value > 0",
-      "window": "time(1 min)",
-      "having": "count(*) >= 1",
-      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "window": "",
+      "having": "",
+      "select": "sensorId, sensorTimestamp, value as avgValue",
       "chaincodeFunction": "trigger_lightExposure"
     },
     {
@@ -59,10 +59,10 @@
       "eventType": "SensorEvent",
       "sensorType": "sealOpen",
       "sensorId": "sealOpen_VaccineProcurementSharedParty_20260126230520661",
-      "condition": "value = 1",
-      "window": "time(1 min)",
-      "having": "count(*) >= 1",
-      "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
+      "condition": "value > 0",
+      "window": "",
+      "having": "",
+      "select": "sensorId, sensorTimestamp, avg(value) as avgValue",
       "chaincodeFunction": "trigger_sealOpen"
     }
   ],

@@ -78,7 +78,7 @@ async function publishSensorData(sensorId, value, username, password) {
     console.error(`❌ [${sensorId}] Publish failed: ${err.message}`);
   }
 }
-
+/*
 // === Test Sensors === 
 const sensors = [
   // ===== Vaccine Procurement =====
@@ -182,6 +182,19 @@ const sensors = [
     username: 'humidityMeat20260126230531127',
     password: 'sensorpass'
   }
+];*/
+
+// === Test Sensors === 
+const sensors = [
+  // ===== Vaccine Procurement =====
+ 
+  {
+    id: 'lightExposure_VaccineProcurementSharedParty_20260126230456957',
+    base: 0,
+    variation: 2,
+    username: 'lightVaccine20260126230456957',
+    password: 'sensorpass'
+  }
 ];
 
 /*
@@ -195,9 +208,10 @@ setInterval(() => {
 }, 10000); // every 10 seconds
 */
 async function publishSensors() {
-  while (true) {
+  let value = 0;
+  while (value == 0) { //while (true)
     for (const sensor of sensors) {
-      const value = sensor.base + Math.floor(Math.random() * sensor.variation);
+      value = sensor.base + Math.floor(Math.random() * sensor.variation); //const
       publishSensorData(sensor.id, value, sensor.username, sensor.password);
 
       console.log(`📡 Sent ${sensor.id}, waiting 10s...`);

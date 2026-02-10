@@ -3,6 +3,8 @@ const amqp = require('amqplib');
 const exchangeName = 'eventExchange';
 
 module.exports.publish = async (message, roles) => {
+  //console.log("publish roles")
+  //console.log(roles)
   try {
     const connection = await amqp.connect('amqp://localhost');
     const channel = await connection.createChannel();
@@ -14,7 +16,8 @@ module.exports.publish = async (message, roles) => {
     //and transportation organazation is a buyer as well
     for (const role of roles) {
       //console.log("role:", role);
-      const roleName = String(role || '').toLowerCase().trim();
+      //const roleName = String(role || '').toLowerCase().trim();
+      const roleName = String(role || '').trim();
 
       if (!roleName) {
         console.warn('⚠️ Skipping empty or malformed role:', role);

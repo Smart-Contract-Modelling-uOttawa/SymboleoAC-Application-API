@@ -2,33 +2,33 @@
   "rules": [
     {
       "id": "temperatureRule",
-      "contractId": "VaccineProcurementC_20260203195511913",
+      "contractId": "VaccineProcurementC_20260254",
       "chaincodeName": "vaccineprocurementc",
       "eventType": "SensorEvent",
       "sensorType": "temperature",
       "sensorId": "temperature_sensor_temperatureRule",
       "condition": "value > -80",
       "window": "time(10 min)",
-      "having": "count(*) > 5",
+      "having": "count(*) >= 5",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_temperature"
     },
     {
       "id": "humidityRule",
-      "contractId": "VaccineProcurementC_20260203195511913",
+      "contractId": "VaccineProcurementC_20260254",
       "chaincodeName": "vaccineprocurementc",
       "eventType": "SensorEvent",
       "sensorType": "humidity",
       "sensorId": "humidity_sensor_humidityRule",
       "condition": "value > 70",
       "window": "time(15 min)",
-      "having": "count(*) > 3",
+      "having": "count(*) >= 3",
       "select": "sensorId, sensorTimestamp, count(*) as cnt, avg(value) as avgValue",
       "chaincodeFunction": "trigger_humidity"
     },
     {
       "id": "shockRule",
-      "contractId": "VaccineProcurementC_20260203195511913",
+      "contractId": "VaccineProcurementC_20260254",
       "chaincodeName": "vaccineprocurementc",
       "eventType": "SensorEvent",
       "sensorType": "shock",
@@ -36,12 +36,12 @@
       "condition": "value > 5",
       "window": "",
       "having": "",
-      "select": "sensorId, sensorTimestamp, value  as avgValue",
+      "select": "sensorId, sensorTimestamp, value as avgValue",
       "chaincodeFunction": "trigger_shock"
     },
     {
       "id": "lightExposureRule",
-      "contractId": "VaccineProcurementC_20260203195511913",
+      "contractId": "VaccineProcurementC_20260254",
       "chaincodeName": "vaccineprocurementc",
       "eventType": "SensorEvent",
       "sensorType": "lightExposure",
@@ -49,12 +49,12 @@
       "condition": "value > 0",
       "window": "",
       "having": "",
-      "select": "sensorId, sensorTimestamp, value  as avgValue",
+      "select": "sensorId, sensorTimestamp, value as avgValue",
       "chaincodeFunction": "trigger_lightExposure"
     },
     {
       "id": "sealOpenRule",
-      "contractId": "VaccineProcurementC_20260203195511913",
+      "contractId": "VaccineProcurementC_20260254",
       "chaincodeName": "vaccineprocurementc",
       "eventType": "SensorEvent",
       "sensorType": "sealOpen",
@@ -62,7 +62,7 @@
       "condition": "value > 0",
       "window": "",
       "having": "",
-      "select": "sensorId, sensorTimestamp, value  as avgValue",
+      "select": "sensorId, sensorTimestamp, value as avgValue",
       "chaincodeFunction": "trigger_sealOpen"
     }
   ],
@@ -76,6 +76,6 @@
   ],
   "metadata": {
     "storedBy": "x509::/OU=client/OU=org1/OU=department1/CN=Regulator2::/C=US/ST=North Carolina/O=Hyperledger/OU=Fabric/CN=fabric-ca-server",
-    "timestamp": "2026-02-03T19:55:14.394Z"
+    "timestamp": "2026-01-25T04:03:19.836Z"
   }
 }

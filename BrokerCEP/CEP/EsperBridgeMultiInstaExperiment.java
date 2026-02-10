@@ -99,11 +99,66 @@ public class EsperBridgeMultiInstaExperiment {
                 String window = (String) rule.get("window");
                 String having = (String) rule.get("having");
                 String select = (String) rule.get("select");
+                String ruleSensorId = (String) rule.get("sensorId");
 
+                /* 
                 String epl = String.format(
                         "select %s from SensorEventsMultiInstaExperiment(%s).win:%s having %s",
                         select, condition, window, having
-                );
+                );*/
+                /* 
+                String epl = String.format(
+                     "select %s from SensorEventsMultiInstaExperiment.win:%s where %s having %s",
+                     select, window, condition, having
+                );*/
+                /* 
+                String epl = String.format(
+                        "select %s " +
+                        "from SensorEventsMultiInstaExperiment.win:%s " +
+                        "where %s " +
+                        "group by sensorId " +
+                        "having %s",
+                        select, window, condition, having
+                    );*/
+                boolean hasAggregate =
+                    select.contains("count(") ||
+                    select.contains("avg(") ||
+                    select.contains("sum(") ||
+                    select.contains("max(") ||
+                    select.contains("min(");
+
+                boolean hasWindow = (window != null && !window.trim().isEmpty());
+                boolean hasHaving = (having != null && !having.trim().isEmpty());
+
+                // Force per-rule sensor filtering (prevents temperatureRule matching lightExposure, etc.)
+                String safeSensorId = ruleSensorId.replace("'", "''");
+                String whereClause = "sensorId = '" + safeSensorId + "' AND (" + condition + ")";
+
+                String epl;
+
+                if (hasWindow && hasAggregate) {
+                    epl = String.format(
+                        "select %s from SensorEventsMultiInstaExperiment.win:%s where %s group by sensorId",
+                        select, window.trim(), whereClause
+                    );
+                } else if (hasWindow) {
+                    epl = String.format(
+                        "select %s from SensorEventsMultiInstaExperiment.win:%s where %s",
+                        select, window.trim(), whereClause
+                    );
+                } else {
+                    epl = String.format(
+                        "select %s from SensorEventsMultiInstaExperiment where %s",
+                        select, whereClause
+                    );
+                }
+
+                if (hasHaving) {
+                    epl += " having " + having.trim();
+                }
+
+
+                System.out.println("8888888888888888888888 epl:" + epl);
 
                 CompilerArguments cargs = new CompilerArguments(config);
                 EPCompiled compiled = compiler.compile(epl, cargs);
