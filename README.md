@@ -17,7 +17,7 @@ npm install
 
 ## Running the Application
 
-Before proceeding, ensure that the chaincode is successfully deployed on Hyperledger Fabric.  
+Before proceeding, ensure the generated smart contract is successfully deployed on Hyperledger Fabric.  
 For deployment instructions, refer to:
 
 [SymboleoAC-HyperledgerFabric-Test-Network](https://github.com/Smart-Contract-Modelling-uOttawa/SymboleoAC-HyperledgerFabric-Test-Netwrok)
@@ -106,3 +106,13 @@ node alertSubscriber.js
 ---
 
 This setup enables real-time data flow from IoT devices through event processing and messaging layers to blockchain-based smart contract execution.
+
+## Multi-Instance Execution
+
+To run multi-instance execution, follow the same steps used for single-instance setup, but use the scripts that end with `MultiInstaExperiment`.
+
+### Enroll Users and Retrieve IoT Rules (Multi-Instance)
+
+Use:
+```bash
+node EnrollRolesRetrieveIoTRulesMultiInstaExperiment.js
