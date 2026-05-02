@@ -29,7 +29,7 @@ To enroll SymboleoAC users and retrieve IoT rules for a specific case study (e.g
 2. Run the script:
 
 ```bash
-node EnrollRolesRetrieveIoTRules.js
+$ node EnrollRolesRetrieveIoTRules.js
 
 ## Enroll Sensors - per instance
 
@@ -41,7 +41,7 @@ To enroll sensors for a specific case study:
 2. Run the script:
 
 ```bash
-node EnrollSensors.js
+$ node EnrollSensors.js
 
 ## Enroll Message Broker
 
@@ -52,7 +52,7 @@ To enroll the message broker:
 1. Run the following script:
 
 ```bash
-node runEnrollRabbitMQ.js
+$ node runEnrollRabbitMQ.js
 
 ## Enroll CEP Server
 
@@ -61,7 +61,7 @@ The Complex Event Processing (CEP) server enrollment is performed **once** (not 
 To enroll the CEP server:
 
 ```bash
-node enrollCEPServer.js
+$ node enrollCEPServer.js
 
 ## Full Cycle Execution (IoT → CEP → Message Broker → Smart Contract)
 
@@ -74,7 +74,7 @@ Follow the steps below:
 2. In the first terminal, start the sensor publisher to generate IoT data:
 
 ```bash
-node secureSensorPublisher.js
+$ node secureSensorPublisher.js
 
 3. In the second terminal, start the CEP engine:
 
@@ -87,7 +87,7 @@ java -cp ".:esper-9.0.0/*:esper-9.0.0/dependencies/*" EsperBridge
 4. In the third terminal, start the alert subscriber to listen for CEP outputs and trigger smart contract transactions:
 
 ```bash
-node alertSubscriber.js
+$ node alertSubscriber.js
 
 5. Ensure the message broker (RabbitMQ) is running and properly connected.
 
@@ -102,29 +102,5 @@ This setup enables real-time data flow from IoT devices through event processing
 
 
 
-#  to enroll and admin
-$ go to app.js comment meatSale(): 298 , appRegisterAndEnrollUser(): 322 and uncomment appEnrollAdmin(): 321 then run below command
 
-$ node app.js
-
-
-#  to enroll and register buyer, seller
-
-# go to app.js comment meatSale(): 298 , appEnrollAdmin(): 321 and uncomment appRegisterAndEnrollUser(): 322, change name of Org1UserId: 93 like buyer1, seller1, shipper1.
-
-# `in CAUtil.js 
-# for buyer
-const attributes = `[{name: 'HF.role', value: 'party1_buyer', ecert:true}, {name: 'department', value: 'finance', ecert:true}]`;
-
-# for seller
-const attributes = `[{name: 'HF.role', value: 'party1_seller', ecert:true}, {name: 'department', value: 'finance', ecert:true}]`;
-
-#then run below command
-
-$ node app.js
-
-# run the chaindoe 
-$ comment appEnrollAdmin(), appRegisterAndEnrollUser() and uncomment meatSale() function then run below
-
-$ node app.js
 ```
