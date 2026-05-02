@@ -65,6 +65,32 @@ After completing all enrollment steps, you can run the full cycle execution from
 
 Follow the steps below:
 
+1. Open three different terminals.
+
+2. In the first terminal, start the sensor publisher to generate IoT data:
+
+```bash
+node secureSensorPublisher.js
+
+3. In the second terminal, start the CEP engine:
+
+# Compile
+javac -cp "esper-9.0.0/*:esper-9.0.0/dependencies/*" *.java
+
+# Run
+java -cp ".:esper-9.0.0/*:esper-9.0.0/dependencies/*" EsperBridge
+
+4. In the third terminal, start the alert subscriber to listen for CEP outputs and trigger smart contract transactions:
+
+```bash
+node alertSubscriber.js
+
+5. Ensure the message broker (RabbitMQ) is running and properly connected.
+
+6. Monitor the smart contract execution and notifications.
+
+This setup enables real-time data flow from IoT devices through event processing and messaging layers to blockchain-based smart contract execution.
+
 
 
 
