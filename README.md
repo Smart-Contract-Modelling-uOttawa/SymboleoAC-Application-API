@@ -59,6 +59,12 @@ To enroll the CEP server:
 ```bash
 node enrollCEPServer.js
 
+## Full Cycle Execution (IoT → CEP → Message Broker → Smart Contract)
+
+After completing all enrollment steps, you can run the full cycle execution from IoT sensors to smart contract execution through the CEP engine and message broker.
+
+Follow the steps below:
+
 
 
 
