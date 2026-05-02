@@ -15,14 +15,14 @@ const app = express();
 app.use(bodyParser.json());
 
 const channelName = 'mychannel';
-const chaincodeName = 'vaccineprocurementc'; //OR "meatsale" based on the chaincode name for the case study
+const chaincodeName = 'meatsale'; //OR "meatsale" OR "vaccineprocurementc" based on the chaincode name for the case study
 const walletPath = path.join(__dirname, 'wallet');
 const ccpPath = path.resolve(__dirname, '..', 'fabric-network-2.2.2', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 const ORG_MSP = 'Org1MSP';
 
 //parameters meatsale
-/* 
+
      const parametersObject = {
          buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -42,10 +42,10 @@ const ORG_MSP = 'Org1MSP';
         effDate: "2025-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    };*/
+    };
 
     //parameters vaccine
-    
+    /*
      const parametersObject = {
       "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
       "mcdcP":  {name:"mcdc", org:"Government of Canada", dept: "finance"},
@@ -58,7 +58,7 @@ const ORG_MSP = 'Org1MSP';
        "minQuantity": 100,
        "maxQuantity" : 500,
        "temperature":-80
-      }
+      }*/
 
     const parameters = JSON.stringify(parametersObject);
 

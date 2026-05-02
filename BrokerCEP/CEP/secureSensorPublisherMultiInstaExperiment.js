@@ -99,28 +99,28 @@ const sensors = [
   {
     id: 'lightExposure_VaccineProcurementSharedParty_20260126230456957',
     base: 0,
-    variation: 1,
+    variation: 2,
     username: 'lightVaccine20260126230456957',
     password: 'sensorpass'
   },
   {
     id: 'lightExposure_VaccineProcurementSharedParty_20260126230520661',
     base: 0,
-    variation: 1,
+    variation: 2,
     username: 'lightVaccine20260126230520661',
     password: 'sensorpass'
   },
   {
     id: 'sealOpen_VaccineProcurementSharedParty_20260126230456957',
     base: 0,
-    variation: 1,
+    variation: 2,
     username: 'sealOpenVaccine20260126230456957',
     password: 'sensorpass'
   },
   {
     id: 'sealOpen_VaccineProcurementSharedParty_20260126230520661',
     base: 0,
-    variation: 1,
+    variation: 2,
     username: 'sealOpenVaccine20260126230520661',
     password: 'sensorpass'
   },
@@ -194,19 +194,41 @@ const sensors = [
     variation: 2,
     username: 'lightVaccine20260126230456957',
     password: 'sensorpass'
-  }
+  },
+  {
+    id: 'temperature_VaccineProcurementSharedParty_20260126230520661',
+    base: -95,
+    variation: 10,
+    username: 'tempVaccine20260126230520661',
+    password: 'sensorpass'
+  },
+  // ===== Meat Sale =====
+  {
+    id: 'temperatureRule_MeatSaleSharedParty_20260126230509416',
+    base: 2,
+    variation: 1.5,
+    username: 'tempMeat20260126230509416',
+    password: 'sensorpass'
+  },
+  {
+    id: 'temperatureRule_MeatSaleSharedParty_20260126230531127',
+    base: 2,
+    variation: 1.5,
+    username: 'tempMeat20260126230531127',
+    password: 'sensorpass'
+  },
 ];
 
-/*
+
 // Publish values periodically
 setInterval(() => {
   sensors.forEach(sensor => {
     const value = sensor.base + Math.floor(Math.random() * sensor.variation);
     publishSensorData(sensor.id, value, sensor.username, sensor.password);
-    await sleep(1100);
+    //await sleep(1100);
   });
 }, 10000); // every 10 seconds
-*/
+
 async function publishSensors() {
   let value = 0;
   while (value == 0) { //while (true)
@@ -220,4 +242,4 @@ async function publishSensors() {
   }
 }
 
-publishSensors();
+//publishSensors();

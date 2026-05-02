@@ -16,6 +16,16 @@ debug.log
 rabitMQ-Publish.js
 rabitMQ-Subscribe.js
 BrokerCEP/CEP/esper-9.0.0/
+BrokerCEP/CEP/MutualTLSsolution/
+BrokerCEP/CEP/UserNameSol/
+BrokerCEP/app.js
+BrokerCEP/appAlert.txt
+BrokerCEP/appCopy.js
+wallet/*
+!wallet/.gitkeep
+meatsale-events.json
+meatsale-user.json
+
 
 #wallet
 #!wallet/.gitkeep

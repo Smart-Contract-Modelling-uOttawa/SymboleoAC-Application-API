@@ -50,7 +50,7 @@ async function executeTransaction(alert) {
     //if (cachedContractId == null && chaincodeName != undefined ) {
     console.log(`--> Submitting transaction: init`);
     //parameters meatsale
-    /*
+    
     const initParams = JSON.stringify({
         buyerP: { warehouse: "70 Glouxter", name: "buyer name", org: "Canada Import Inc", dept: "finance" },
         sellerP: { returnAddress: "51 Riduea", name: "seller name", org: "Argentina Export Inc", dept: "finance" },
@@ -70,8 +70,8 @@ async function executeTransaction(alert) {
         effDate: "2026-08-28T17:49:41.422Z",
         delDueDateDays: 3,
         interestRate: 2
-    });*/
-
+    });
+/*
      //parameters vaccine
      const initParams = JSON.stringify({
       "pfizerP":  {name:"pfizer", org:"pfizer Company", dept: "finance"},
@@ -85,7 +85,7 @@ async function executeTransaction(alert) {
        "minQuantity": 100,
        "maxQuantity" : 500,
        "temperature":-80
-      });
+      });*/
 
     const initTxn = contract.createTransaction('init');
     let initRes = await initTxn.submit(initParams);

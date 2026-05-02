@@ -158,7 +158,7 @@ public class EsperBridgeMultiInstaExperiment {
                 }
 
 
-                System.out.println("8888888888888888888888 epl:" + epl);
+                //System.out.println("8888888888888888888888 epl:" + epl);
 
                 CompilerArguments cargs = new CompilerArguments(config);
                 EPCompiled compiled = compiler.compile(epl, cargs);
