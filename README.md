@@ -1,6 +1,6 @@
 # SymboleoAC API
 
-**SymboleoAC API** is a secure and event-driven application layer that connects \SymboleoAC/ smart contracts with external cyber-physical components, including IoT sensors, a message broker, a CEP engine, and Hyperledger Fabric.
+**SymboleoAC API** is a secure and event-driven application layer that connects SymboleoAC smart contracts with external cyber-physical components, including IoT sensors, a message broker, a CEP engine, and Hyperledger Fabric.
 
 It supports secure communication, event publication and subscription, smart contract transaction invocation, and role-based notifications.
 
