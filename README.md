@@ -16,11 +16,16 @@ $ npm install
 
 ```bash
 
-#  to enroll users and retrive IoT rules per case study (meatsale or vaccine procurementc)
-$ go to EnrollRolesRetrieveIoTRules.js
-$ uncomment parameters of intended case study 
-$ then run below command
-$ node EnrollRolesRetrieveIoTRules.js
+## Enroll Users and Retrieve IoT Rules (stored in rules.json)
+
+To enroll users and retrieve IoT rules for a specific case study (e.g., Meat Sale or Vaccine Procurement), use the `EnrollRolesRetrieveIoTRules.js` script.
+
+1. Open `EnrollRolesRetrieveIoTRules.js` and uncomment the parameters for the intended case study.
+
+2. Run the script:
+
+```bash
+node EnrollRolesRetrieveIoTRules.js
 
 
 
