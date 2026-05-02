@@ -109,7 +109,7 @@ This setup enables real-time data flow from IoT devices through event processing
 
 ## Multi-Instance Execution
 
-To run multi-instance execution, follow the same steps used for single-instance setup, but use the scripts that end with `MultiInstaExperiment`.
+To run multi-instance execution, follow the same steps used for single-instance setup, but use the scripts that end with `MultiInstaExperiment` For Example:
 
 ### Enroll Users and Retrieve IoT Rules (Multi-Instance)
 
