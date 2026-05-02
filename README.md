@@ -15,6 +15,20 @@ $ npm install
 ## Running the app
 
 ```bash
+
+#  to enroll users and retrive IoT rules per case study (meatsale or vaccine procurementc)
+$ go to EnrollRolesRetrieveIoTRules.js
+$ uncomment parameters of intended case study 
+$ then run below command
+$ node EnrollRolesRetrieveIoTRules.js
+
+
+
+
+
+
+
+
 #  to enroll and admin
 $ go to app.js comment meatSale(): 298 , appRegisterAndEnrollUser(): 322 and uncomment appEnrollAdmin(): 321 then run below command
 
