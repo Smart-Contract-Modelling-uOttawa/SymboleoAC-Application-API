@@ -16,7 +16,7 @@ $ npm install
 
 ```bash
 
-## Enroll Users (stored in wallet) and Retrieve IoT Rules (stored in rules.json)
+## Enroll Users (stored in wallet) and Retrieve IoT Rules (stored in rules.json) - per instance
 
 To enroll SymboleoAC users and retrieve IoT rules for a specific case study (e.g., Meat Sale or Vaccine Procurement), use the `EnrollRolesRetrieveIoTRules.js` script.
 
@@ -27,7 +27,7 @@ To enroll SymboleoAC users and retrieve IoT rules for a specific case study (e.g
 ```bash
 node EnrollRolesRetrieveIoTRules.js
 
-## Enroll Sensors
+## Enroll Sensors - per instance
 
 To enroll sensors for a specific case study:
 
@@ -38,6 +38,26 @@ To enroll sensors for a specific case study:
 
 ```bash
 node EnrollSensors.js
+
+## Enroll Message Broker
+
+The message broker enrollment is performed **once** (not per instance).
+
+To enroll the message broker:
+
+1. Run the following script:
+
+```bash
+node runEnrollRabbitMQ.js
+
+## Enroll CEP Server
+
+The Complex Event Processing (CEP) server enrollment is performed **once** (not per instance).
+
+To enroll the CEP server:
+
+```bash
+node enrollCEPServer.js
 
 
 
