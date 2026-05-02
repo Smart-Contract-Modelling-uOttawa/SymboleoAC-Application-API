@@ -16,7 +16,7 @@ $ npm install
 
 ```bash
 
-## Enroll Users and Retrieve IoT Rules (stored in rules.json)
+## Enroll Users (stored in wallet) and Retrieve IoT Rules (stored in rules.json)
 
 To enroll users and retrieve IoT rules for a specific case study (e.g., Meat Sale or Vaccine Procurement), use the `EnrollRolesRetrieveIoTRules.js` script.
 
